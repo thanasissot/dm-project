@@ -1,0 +1,34 @@
+services:
+  mariadb:
+    build:
+      context: docker/db
+      dockerfile: Dockerfile
+    image: 'mariadb:latest'
+    environment:
+      - 'MARIADB_DATABASE=dm-users'
+      - 'MARIADB_PASSWORD=root'
+      - 'MARIADB_ROOT_PASSWORD=verysecret'
+      - 'MARIADB_USER=root'
+    ports:
+      - '3306:3306'
+
+  spring-app:
+    build:
+      dockerfile: docker/war/Dockerfile
+    environment:
+      DB_HOST: Dockerfile
+      DB_PORT: 3306
+      DB_NAME: dm-users
+      DB_USER: root
+      DB_PASSWORD: verysecret
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mariadb
+    networks:
+      - spring-network
+
+
+networks:
+  spring-network:
+    driver: bridge
