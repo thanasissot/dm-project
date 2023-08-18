@@ -7,7 +7,7 @@ import { User } from '../model/user.model';
   providedIn: 'root'
 })
 export class UserService {
-  private user_api_url = 'http://localhost:8081/api/';
+  private user_api_url = 'http://localhost:8081/api';
   constructor(
     private http: HttpClient
   ) { }
@@ -21,9 +21,7 @@ export class UserService {
 
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
-      // TODO: send the error to remote logging infrastructure
       console.error(error); // log to console instead
-      // Let the app keep running by returning an empty result.
       return of(result as T);
     };
   }
