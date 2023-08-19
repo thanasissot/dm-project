@@ -1,4 +1,4 @@
-package sot.thanasis.dmusers;
+package sot.thanasis.dmusers.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

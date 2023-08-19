@@ -1,4 +1,4 @@
-package sot.thanasis.dmusers;
+package sot.thanasis.dmusers.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;

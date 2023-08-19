@@ -1,4 +1,4 @@
-package sot.thanasis.dmusers;
+package sot.thanasis.dmusers.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

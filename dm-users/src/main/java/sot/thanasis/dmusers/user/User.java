@@ -1,4 +1,4 @@
-package sot.thanasis.dmusers;
+package sot.thanasis.dmusers.user;
 
 import jakarta.persistence.*;
 import lombok.*;
