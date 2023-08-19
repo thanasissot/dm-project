@@ -30,10 +30,8 @@ public class User implements Serializable, UserDetails {
     String email;
     String password;
 
-    //Un utilisateur peut avoir plusieurs roles
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     List<Role> roles;
-
 
     public User(String email, String password, List<Role> roles) {
         this.email = email;
