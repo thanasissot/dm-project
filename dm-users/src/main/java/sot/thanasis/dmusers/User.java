@@ -35,4 +35,8 @@ public class User {
     @Column(name = "disabled")
     private boolean disabled;
 
+    @PrePersist
+    protected void onCreate() {
+        createdOn = LocalDateTime.now();
+    }
 }
