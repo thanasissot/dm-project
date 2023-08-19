@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {UserService} from "../../core/services/user.service";
 import {User} from "../../core/model/user.model";
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-users',
@@ -8,52 +9,66 @@ import {User} from "../../core/model/user.model";
   styleUrls: ['./users.component.scss']
 })
 export class UsersComponent {
-  public displayedColumns: string[] = ['id', 'username', 'email', 'disabled'];
-  public users: User[] = [];
+  displayedColumns: string[] = ['id', 'username', 'email', 'disabled'];
+  users: User[] = [];
+  showUserForm: boolean = false;
+  userForm: FormGroup;
 
   constructor(
     private userService: UserService,
-  ) { }
+    private formBuilder: FormBuilder,
+  ) {
+    this.userForm = this.formBuilder.group({
+      username: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+    });
+  }
 
   ngOnInit() {
+    this.populateUserList();
+  }
+
+  onSave(): void {
+    if (this.userForm.valid) {
+      const newUser = {
+        username: this.userForm.value.username,
+        email: this.userForm.value.email,
+      };
+
+      this.userService.createUser(newUser).subscribe({
+        next: (body) => {
+          console.log('user created.');
+          // request updated user data
+          this.populateUserList();
+        },
+        error: (msg: any) => {
+          console.log(msg);
+        }
+      });
+
+      // Handle saving the new user object here
+      console.log('New user object:', newUser);
+
+      // Reset the form and hide it
+      this.userForm.reset();
+      this.showUserForm = false;
+    }
+  }
+
+  onCancel(): void {
+    // Reset the form and hide it
+    this.userForm.reset();
+    this.showUserForm = false;
+  }
+
+  populateUserList() {
     this.userService.getUsers().subscribe(
       body => {
         this.users = Object.values(body);
-        this.users.push(sampleUser);
       }
     );
-
-    const sampleUser: User = {
-      id: '1',
-      username: 'john_doe',
-      email: 'john@example.com',
-      createdOn: '2023-08-19T10:00:00Z',
-      createdBy: {
-        id: '2',
-        username: 'admin',
-        email: 'admin@example.com',
-        createdOn: '2023-08-18T08:30:00Z',
-        createdBy: null as any,
-        modifiedOn: '2023-08-18T08:30:00Z',
-        modifiedBy: null as any,
-        disabled: false
-      },
-      modifiedOn: '2023-08-19T15:45:00Z',
-      modifiedBy: {
-        id: '3',
-        username: 'manager',
-        email: 'manager@example.com',
-        createdOn: '2023-08-19T09:15:00Z',
-        createdBy: null as any,
-        modifiedOn: '2023-08-19T09:15:00Z',
-        modifiedBy: null as any,
-        disabled: false
-      },
-      disabled: false
-    };
-
-
   }
+
 }
 
 

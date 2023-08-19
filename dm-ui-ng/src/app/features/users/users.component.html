@@ -30,3 +30,17 @@
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
+<button mat-button color="primary" (click)="showUserForm = true">Create User</button>
+<div *ngIf="showUserForm">
+  <h2>Create User</h2>
+  <form [formGroup]="userForm">
+    <label for="username">Username:</label>
+    <input type="text" id="username" formControlName="username">
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" formControlName="email">
+
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button color="primary" (click)="onSave()">Save</button>
+  </form>
+</div>
