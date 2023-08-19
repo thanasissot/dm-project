@@ -1,10 +1,10 @@
-package sot.thanasis.dmusers;
+package sot.thanasis.security;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DmUsersApplicationTests {
+class SecurityApplicationTests {
 
     @Test
     void contextLoads() {

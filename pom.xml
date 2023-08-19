@@ -19,7 +19,7 @@
     </properties>
 
     <modules>
-        <module>dm-users</module>
+        <module>security</module>
     </modules>
 
     <dependencies>

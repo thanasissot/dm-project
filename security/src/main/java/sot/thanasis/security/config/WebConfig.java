@@ -1,4 +1,4 @@
-package sot.thanasis.dmusers.config;
+package sot.thanasis.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
