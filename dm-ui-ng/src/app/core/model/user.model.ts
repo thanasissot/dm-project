@@ -1,10 +1,7 @@
 export interface User {
-  id: string;
-  username: string;
+  id: number;
+  firstName: string;
+  lastName: string;
   email: string;
-  createdOn: string
-  createdBy: User;
-  modifiedOn: string;
-  modifiedBy: User;
-  disabled: boolean;
+  roles: [string];
 }

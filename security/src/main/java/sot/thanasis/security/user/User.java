@@ -1,5 +1,6 @@
 package sot.thanasis.security.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -7,7 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import sot.thanasis.security.role.Role;
-
 import java.io.Serializable;
 import java.util.*;
 
@@ -28,6 +28,7 @@ public class User implements Serializable, UserDetails {
     String firstName;
     String lastName;
     String email;
+    @JsonIgnore
     String password;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)

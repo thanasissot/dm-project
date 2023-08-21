@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import sot.thanasis.security.dto.BearerToken;
 import sot.thanasis.security.dto.LoginDto;
 import sot.thanasis.security.dto.RegisterDto;
+import sot.thanasis.security.dto.TokenDto;
 import sot.thanasis.security.role.IRoleRepository;
 import sot.thanasis.security.role.Role;
 import sot.thanasis.security.role.RoleName;
@@ -66,7 +67,7 @@ public class UserService implements IUserService {
 
 
     @Override
-    public String authenticate(LoginDto loginDto) {
+    public TokenDto authenticate(LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDto.getEmail(),
@@ -78,7 +79,9 @@ public class UserService implements IUserService {
         List<String> rolesNames = new ArrayList<>();
         user.getRoles().forEach(r -> rolesNames.add(r.getRoleName()));
         String token = jwtUtilities.generateToken(user.getUsername(), rolesNames);
-        return token;
+        String expiresIn = jwtUtilities.extractExpiration(token).toString();
+
+        return TokenDto.builder().idToken(token).expiresIn(expiresIn).build();
     }
 
 }
