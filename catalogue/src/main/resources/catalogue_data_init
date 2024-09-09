@@ -1,3 +1,9 @@
+
+use admin;
+db.auth('admin', 'secret')
+
+use mydatabase;
+
 db.createCollection('tags');
 db.tags.insertMany([
     {_id: ObjectId("111111111111111111111111"), name: "brown"},
