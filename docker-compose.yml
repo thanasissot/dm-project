@@ -1,0 +1,45 @@
+version: '3.7'
+
+services:
+  cart-db:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    command: --bind_ip_all
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_DATABASE: mydatabase
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/
+
+  carts-q:
+    container_name: carts-q
+    build:
+      context: carts  # This should be the path to your root project folder where 'src' is located
+      dockerfile: carts/src/main/docker/Dockerfile.jvm  # Path to Dockerfile relative to the context
+    environment:
+      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin
+      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin"
+    ports:
+      - "8088:8080"
+    depends_on:
+      - cart-db
+
+  catalogue-q:
+    container_name: catalogue-q
+    build:
+      context: catalogue
+      dockerfile: catalogue/src/main/docker/Dockerfile.jvm
+    environment:
+      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin
+      JAVA_OPTS_APPEND: "-Dquarkus.profile=docker -Dimage.dir=/opt/images -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin"
+    ports:
+      - "8089:8080"
+    depends_on:
+      - cart-db
+
+volumes:
+  mongodb_data:
