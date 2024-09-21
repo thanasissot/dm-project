@@ -15,4 +15,7 @@ public class CartQueryDto {
     private Set<CartItemDto> cartItems;
     @Nullable
     private Long cartItemIdForDelete;
+    @Nullable
+    private ItemQuantityUpdateDto itemQuantityUpdate;
+
 }

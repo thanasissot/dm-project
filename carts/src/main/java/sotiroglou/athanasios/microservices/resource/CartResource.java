@@ -5,6 +5,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import sotiroglou.athanasios.microservices.CartNotFoundException;
 import sotiroglou.athanasios.microservices.dto.CartDto;
 import sotiroglou.athanasios.microservices.dto.CartQueryDto;
 import sotiroglou.athanasios.microservices.entity.Cart;
@@ -14,7 +15,6 @@ import sotiroglou.athanasios.microservices.mapper.CartMapper;
 import sotiroglou.athanasios.microservices.repository.CartItemRepository;
 import sotiroglou.athanasios.microservices.repository.CartRepository;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -47,25 +47,15 @@ public class CartResource {
     public Response getCartById(
             @RequestBody(required = true) final CartQueryDto cartQueryDto
     ) {
-        Optional<Cart> cart = cartRepository.findById(cartQueryDto.getCartId());
-        if (cart.isPresent()) {
-            return Response.ok(cart.get()).build();
-        }
-
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return getResponse(cartQueryDto);
     }
 
     @POST
-    @Path("/get/customer")
+    @Path("/get/by/customer")
     public Response getCartByCustomerId(
             @RequestBody(required = true) final CartQueryDto cartQueryDto
     ) {
-        Optional<Cart> cart = cartRepository.findByCustomerId(cartQueryDto.getCustomerId());
-        if (cart.isPresent()) {
-            return Response.ok(cart.get()).build();
-        }
-
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return getResponse(cartQueryDto);
     }
 
 
@@ -87,28 +77,13 @@ public class CartResource {
     public Response deleteCart(
             @RequestBody(required = true) final CartQueryDto cartQueryDto
     ) {
-
-        if (cartQueryDto.getCartId() == null && cartQueryDto.getCustomerId() == null) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        Response response = getResponse(cartQueryDto);
+        if (response.getStatus() == 200) {
+            Cart cart = (Cart) response.getEntity();
+            cartRepository.delete(cart);
         }
 
-        if (cartQueryDto.getCartId() != null) {
-            boolean exists = cartRepository.existsById(cartQueryDto.getCartId());
-            if (exists) {
-                cartRepository.deleteById(cartQueryDto.getCartId());
-                return Response.status(Response.Status.OK).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-        }
-
-        Optional<Cart> cart = cartRepository.findByCustomerId(cartQueryDto.getCustomerId());
-        if (cart.isPresent()) {
-            cartRepository.delete(cart.get());
-            return Response.status(Response.Status.OK).build();
-        }
-
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return response;
     }
 
     @POST
@@ -116,26 +91,41 @@ public class CartResource {
     public Response addCartItems(
             @RequestBody(required = true) final CartQueryDto cartQueryDto
     ) {
-        if (cartQueryDto.getCartId() == null && cartQueryDto.getCustomerId() == null) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        Response response = getResponse(cartQueryDto);
+        if (response.getStatus() == 200) {
+            Cart cart = (Cart) response.getEntity();
+            Set<CartItem> cartItems = cartItemMapper.dtosToEntities(cartQueryDto.getCartItems());
+            for (CartItem cartItem : cartItems) {
+                cartItem.setCart(cart);
+            }
+            cartItemRepository.saveAll(cartItems);
+            cart = cartRepository.findById(cart.getId()).get();
+            return Response.status(Response.Status.OK).entity(cart).build();
         }
 
-        Cart cart = getCart(cartQueryDto);
-        if (cart == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        return response;
+    }
+
+    @POST
+    @Path("/update/item/quantity")
+    public Response itemQuantityUpdate(
+            @RequestBody(required = true) final CartQueryDto cartQueryDto
+    ) {
+        if (cartQueryDto.getItemQuantityUpdate() != null
+                && cartQueryDto.getItemQuantityUpdate().getId() != null
+        ) {
+            Long itemId = cartQueryDto.getItemQuantityUpdate().getId();
+            Optional<CartItem> optionalCartItem = cartItemRepository.findById(itemId);
+            if (optionalCartItem.isPresent()) {
+                CartItem cartItem = optionalCartItem.get();
+                cartItem.setQuantity(cartQueryDto.getItemQuantityUpdate().getQuantity());
+                cartItem = cartItemRepository.save(cartItem);
+                return Response.status(Response.Status.OK).entity(cartItem).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
         }
-
-        System.out.println(cartQueryDto.getCartItems());
-
-
-        Set<CartItem> cartItems = cartItemMapper.dtosToEntities(cartQueryDto.getCartItems());
-        for (CartItem cartItem : cartItems) {
-            cartItem.setCart(cart);
-        }
-
-        cartItems = new HashSet<>(cartItemRepository.saveAll(cartItems));
-
-        return Response.ok(cartItems).build();
+        return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
     @DELETE
@@ -158,22 +148,41 @@ public class CartResource {
 
 
     private Cart getCart(CartQueryDto cartQueryDto) {
+        if (cartQueryDto.getCartId() == null && cartQueryDto.getCustomerId() == null) {
+            throw new IllegalArgumentException("CartId and CustomerId cannot be null at the same time");
+        }
+
         if (cartQueryDto.getCartId() != null) {
             Optional<Cart> cart = cartRepository.findById(cartQueryDto.getCartId());
             if (cart.isPresent()) {
                 return cart.get();
             }
-        }
-
-        else if (cartQueryDto.getCustomerId() != null) {
+        } else {
             Optional<Cart> cart = cartRepository.findByCustomerId(cartQueryDto.getCustomerId());
             if (cart.isPresent()) {
                 return cart.get();
             }
         }
 
-        return null;
+        throw new CartNotFoundException(String.format("CartId=%s and CustomerId=%s do not exist in the DB", cartQueryDto.getCartId(), cartQueryDto.getCustomerId()));
+
     }
+
+    private Response getResponse(CartQueryDto cartQueryDto) {
+        Cart cart = null;
+        try {
+            cart = getCart(cartQueryDto);
+        } catch (CartNotFoundException e) {
+            System.out.println(e.getLocalizedMessage());
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getLocalizedMessage());
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        return Response.ok(cart).build();
+    }
+
 
 }
 
