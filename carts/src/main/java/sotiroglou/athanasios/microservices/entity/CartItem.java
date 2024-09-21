@@ -1,22 +1,32 @@
 package sotiroglou.athanasios.microservices.entity;
 
-import io.quarkus.mongodb.panache.PanacheMongoEntity;
-import io.quarkus.mongodb.panache.common.MongoEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.bson.types.ObjectId;
 
 @Data
+@Entity
+@Table(name = "cart_item")
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@MongoEntity(database = "mydatabase")
-@Builder
-public class CartItem extends PanacheMongoEntity {
-    private int quantity;
-    private double unitPrice;
-    private ObjectId cartId;
-    private ObjectId productId;
+public class CartItem {
 
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id", nullable = false)
+    @JsonBackReference
+    private Cart cart;
+
+    private int quantity;
+
+    private double unitPrice;
+
+    private Long productId;
 }
