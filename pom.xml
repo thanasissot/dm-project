@@ -15,6 +15,8 @@
         <module>payments</module>
         <module>jms</module>
         <module>auth</module>
+        <module>users</module>
+        <module>front-end</module>
     </modules>
 
     <properties>
@@ -43,18 +45,35 @@
             <artifactId>mapstruct</artifactId>
             <version>1.6.2</version>
         </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-mariadb</artifactId>
-        </dependency>
         <!-- Hibernate ORM specific dependencies -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-hibernate-orm</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>io.quarkus</groupId>-->
+<!--            <artifactId>quarkus-hibernate-orm</artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-spring-data-jpa</artifactId>
+        </dependency>
+        <!-- NEEDED for json mapping -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-health</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-openapi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy</artifactId>
         </dependency>
     </dependencies>
 
@@ -77,11 +96,7 @@
                 <artifactId>mapstruct</artifactId>
                 <version>1.6.2</version>
             </dependency>
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-jdbc-mariadb</artifactId>
-                <version>${quarkus.platform.version}</version>
-            </dependency>
+
             <!-- Hibernate ORM specific dependencies -->
             <dependency>
                 <groupId>io.quarkus</groupId>
@@ -91,6 +106,32 @@
             <dependency>
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-spring-data-jpa</artifactId>
+                <version>${quarkus.platform.version}</version>
+            </dependency>
+            <!-- NEEDED for json mapping -->
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-resteasy-jackson</artifactId>
+                <version>${quarkus.platform.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-smallrye-health</artifactId>
+                <version>${quarkus.platform.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-hibernate-validator</artifactId>
+                <version>${quarkus.platform.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-smallrye-openapi</artifactId>
+                <version>${quarkus.platform.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-resteasy</artifactId>
                 <version>${quarkus.platform.version}</version>
             </dependency>
         </dependencies>
@@ -138,11 +179,24 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>native</id>
+            <activation>
+                <property>
+                    <name>native</name>
+                </property>
+            </activation>
+            <properties>
+                <skipITs>false</skipITs>
+                <quarkus.native.enabled>true</quarkus.native.enabled>
+            </properties>
+        </profile>
+    </profiles>
+
 <!--
     docker build -f .\src\main\docker\Dockerfile.jvm -t quarkus/carts .
     docker run - -network docker_default -i - -rm -p 8088:8080 quarkus/carts
     docker run - -network parent_default -i - -rm -p 8088:8080 quarkus/carts
-
   -->
-
 </project>

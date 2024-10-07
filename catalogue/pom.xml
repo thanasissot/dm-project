@@ -57,39 +57,12 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-jackson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-smallrye-health</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-arc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
             <artifactId>quarkus-container-image-jib</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-junit5</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId> <!-- Make sure to use the latest version -->
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.34</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -98,33 +71,33 @@
     </dependencies>
 
     <build>
-        <finalName>carts</finalName>
+        <finalName>catalogue</finalName>
         <plugins>
-            <plugin>
-                <groupId>${quarkus.platform.group-id}</groupId>
-                <artifactId>quarkus-maven-plugin</artifactId>
-                <version>${quarkus.platform.version}</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>build</goal>
-                            <goal>generate-code</goal>
-                            <!--                            <goal>generate-code-tests</goal>-->
-                            <goal>native-image-agent</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${compiler-plugin.version}</version>
-                <configuration>
-                    <parameters>true</parameters>
-                    <source>21</source> <!-- or your specific Java version -->
-                    <target>21</target>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>${quarkus.platform.group-id}</groupId>-->
+<!--                <artifactId>quarkus-maven-plugin</artifactId>-->
+<!--                <version>${quarkus.platform.version}</version>-->
+<!--                <extensions>true</extensions>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>build</goal>-->
+<!--                            <goal>generate-code</goal>-->
+<!--                            &lt;!&ndash;                            <goal>generate-code-tests</goal>&ndash;&gt;-->
+<!--                            <goal>native-image-agent</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+<!--            <plugin>-->
+<!--                <artifactId>maven-compiler-plugin</artifactId>-->
+<!--                <version>${compiler-plugin.version}</version>-->
+<!--                <configuration>-->
+<!--                    <parameters>true</parameters>-->
+<!--                    <source>21</source> &lt;!&ndash; or your specific Java version &ndash;&gt;-->
+<!--                    <target>21</target>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
             <!--            <plugin>-->
             <!--                <artifactId>maven-surefire-plugin</artifactId>-->
             <!--                <version>${surefire-plugin.version}</version>-->

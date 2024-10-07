@@ -34,7 +34,7 @@ services:
     container_name: catalogue-q
     build:
       context: catalogue
-      dockerfile: catalogue/src/main/docker/Dockerfile.jvm
+      dockerfile: /src/main/docker/Dockerfile.jvm
     environment:
       QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin
       JAVA_OPTS_APPEND: "-Dquarkus.profile=docker -Dimage.dir=/opt/images -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin"
