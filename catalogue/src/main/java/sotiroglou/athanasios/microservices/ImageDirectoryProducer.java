@@ -1,10 +1,10 @@
 package sotiroglou.athanasios.microservices;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
-@Service
+@ApplicationScoped
 public class ImageDirectoryProducer {
 
     @ConfigProperty(name = "quarkus.profile")

@@ -47,9 +47,10 @@ services:
       dockerfile: ./src/main/docker/Dockerfile.jvm
     environment:
       QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin
-      JAVA_OPTS_APPEND: "-Dquarkus.profile=docker -Dimage.dir=/opt/images -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin"
+      JAVA_OPTS_APPEND: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Dquarkus.profile=docker -Dimage.dir=/opt/images -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin"
     ports:
       - "8089:8080"
+      - "5059:5005"
     depends_on:
       - cart-db
 

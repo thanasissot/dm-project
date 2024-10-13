@@ -7,10 +7,9 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import lombok.Value;
+import lombok.extern.log4j.Log4j2;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 import sotiroglou.athanasios.microservices.ImageDirectoryProducer;
 import sotiroglou.athanasios.microservices.entity.Sock;
 import sotiroglou.athanasios.microservices.entity.SockTag;
@@ -18,17 +17,19 @@ import sotiroglou.athanasios.microservices.entity.Tag;
 import sotiroglou.athanasios.microservices.repository.SockRepository;
 
 import java.io.File;
-import java.net.URL;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
 @Path("/catalogue")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SockResource {
+
+    Logger logger = Logger.getLogger(SockResource.class.getName());
 
     @Inject
     SockRepository sockRepository;
@@ -45,7 +46,6 @@ public class SockResource {
             @QueryParam("pageSize") int pageSize
     ) {
         if (tags != null && !tags.isEmpty()) {
-//            return Sock.findAll().list();
             List<Tag> tagList = Tag.find(new Document("name" , new Document("$in", tags))).list();
             List<ObjectId> tagIds = tagList.stream()
                     .map(tag -> tag.id)
@@ -100,28 +100,29 @@ public class SockResource {
     @GET
     @Path("/images/{imageName}")
     @Produces("image/jpeg")
-    public Response getImage(@PathParam("imageName") String imageName) {
+    public Response getImage(@PathParam("imageName") String imageName) throws IOException {
+        File imageFile = null;
+
         try {
-            File imageFile;
-            if (imageDirectoryProducer.isRunningOnDocker()) {
-                System.out.println(imageDirectoryProducer.getImagesDirectory());
-                System.out.println(imageDirectoryProducer.isRunningOnDocker());
-                imageFile = new File(imageDirectoryProducer.getImagesDirectory(), imageName);
-            } else {
+            imageFile = new File(imageDirectoryProducer.getImagesDirectory(), imageName);
+
+        } catch (Exception e) {
+            // ignore
+        }
+
+        if (imageFile == null) {
+            try {
                 imageFile = new File(Objects.requireNonNull(
                         this.getClass().getClassLoader()
                                 .getResource("images/" + imageName)).getFile());
-            }
-            if (!imageFile.exists()) {
+            } catch (Exception e) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-
-            return Response.ok(Files.readAllBytes(imageFile.toPath()))
-                    .header("Content-Disposition", "inline; filename=\"" + imageName + "\"")
-                    .build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error serving image").build();
         }
+
+        return Response.ok(Files.readAllBytes(imageFile.toPath()))
+                .header("Content-Disposition", "inline; filename=\"" + imageName + "\"")
+                .build();
     }
 
     @POST
