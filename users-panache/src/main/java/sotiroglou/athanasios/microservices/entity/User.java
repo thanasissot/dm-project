@@ -16,17 +16,17 @@ public class User extends PanacheMongoEntity {
 
     // These fields will not be persisted
     @Transient
-    public List<ObjectId> addressesIds;
+    public List<Address> addresses;
 
     @Transient
-    public List<ObjectId> cardsIds;
+    public List<Card> cards;
 
+    public ObjectId customerId;
     public String firstName;
     public String lastName;
     public String email;
     public String username;
     public String password;
     public String salt;
-
 
 }

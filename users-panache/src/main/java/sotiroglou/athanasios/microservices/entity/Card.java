@@ -10,7 +10,7 @@ import org.bson.types.ObjectId;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@MongoEntity(collection="users")
+@MongoEntity(collection="cards")
 public class Card extends PanacheMongoEntity {
 
     public String cardNumber;  // In a real system, this should be encrypted

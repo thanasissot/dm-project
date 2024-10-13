@@ -9,7 +9,6 @@ import org.bson.types.ObjectId;
 import sotiroglou.athanasios.microservices.entity.Cart;
 import sotiroglou.athanasios.microservices.entity.CartItem;
 
-import java.util.Arrays;
 import java.util.Set;
 
 @ApplicationScoped
@@ -26,10 +25,7 @@ public class DataInitializer {
 
             // Create carts
             Cart cart1 = new Cart();
-//            cart1.customerId = new ObjectId();  // Simulating customerId for example
-
             Cart cart2 = new Cart();
-//            cart2.customerId = new ObjectId();
 
             // Save the carts
             cart1.persist();

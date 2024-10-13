@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="HttpClientEndpointsTabState">
-    <option name="requestToText" value="&lt;CachedHttpClientTabRequests&gt;&#10;  &lt;entry key=&quot;aa9b5cd0a6c2d3bfccb086169a0c812e8f7e2299&quot; value=&quot;###&amp;#10;GET http://localhost/catalogue/{{id}}&quot; /&gt;&#10;&lt;/CachedHttpClientTabRequests&gt;" />
+    <option name="requestToText" value="&lt;CachedHttpClientTabRequests&gt;&#10;  &lt;entry key=&quot;4115b15413b432a19c943c7ad38ff4fd6cc5e067&quot; value=&quot;###&amp;#10;DELETE http://localhost/carts/delete/item&quot; /&gt;&#10;  &lt;entry key=&quot;aa9b5cd0a6c2d3bfccb086169a0c812e8f7e2299&quot; value=&quot;###&amp;#10;GET http://localhost/catalogue/{{id}}&quot; /&gt;&#10;  &lt;entry key=&quot;4b266e6a84092a4a9abdc4e2f4ca6ced7f5cf2d3&quot; value=&quot;###&amp;#10;POST http://localhost/carts/create&quot; /&gt;&#10;&lt;/CachedHttpClientTabRequests&gt;" />
   </component>
 </project>
