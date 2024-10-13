@@ -15,7 +15,7 @@
         <module>payments</module>
         <module>jms</module>
         <module>auth</module>
-        <module>users</module>
+        <module>users-panache</module>
         <module>front-end</module>
     </modules>
 

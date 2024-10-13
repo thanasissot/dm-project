@@ -1,19 +1,38 @@
-version: '3.7'
 
 services:
-  cart-db:
-    image: mongo:latest
-    container_name: mongo
+  mongodb:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.jvm
+    container_name: mongodb
+    hostname: mongodb
     restart: always
-    command: --bind_ip_all
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: secret
-      MONGO_INITDB_DATABASE: mydatabase
     ports:
       - "27017:27017"
     volumes:
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js  # Mount the script
+      - mongodb_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    command: [ "-f", "/etc/mongod.conf" ]
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: admin
+#      MONGO_INITDB_ROOT_PASSWORD: secret
+#      MONGO_INITDB_DATABASE: admin
+#    volumes:
+#      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js  # Mount the script
+#      - mongodb_data:/data/db
+
+  users-q:
+    container_name: users-panache
+    build:
+      context: users-panache
+      dockerfile: ./src/main/docker/Dockerfile.jvm
+    environment:
+      JAVA_OPTS_APPEND: "-Dquarkus.profile=docker -Dimage.dir=/opt/images -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+    ports:
+      - "8093:8080"
+    depends_on:
+      - mongodb
+
 
 
 
@@ -28,20 +47,22 @@ services:
     ports:
       - "8088:8080"
     depends_on:
-      - cart-db
+      - mongodb
 
   catalogue-q:
     container_name: catalogue-q
     build:
       context: catalogue
-      dockerfile: /src/main/docker/Dockerfile.jvm
+      dockerfile: ./src/main/docker/Dockerfile.jvm
     environment:
       QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin
       JAVA_OPTS_APPEND: "-Dquarkus.profile=docker -Dimage.dir=/opt/images -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin"
     ports:
       - "8089:8080"
     depends_on:
-      - cart-db
+      - mongodb
+
+
 
 volumes:
   mongodb_data:

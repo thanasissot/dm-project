@@ -1,5 +1,42 @@
-db = db.getSiblingDB('mydatabase');  // Select the database 'mydatabase'
 
+// Initialize the replica set
+rs.initiate({
+    _id: 'rs0',
+    members: [
+        { _id: 0, host: 'localhost:27017' }
+        // Add more members here if you want to set up additional nodes
+    ]
+});
+
+// Authenticate as the root user
+
+// Use admin then create user root
+var adminDB = db.getSiblingDB('admin');
+adminDB.createUser({
+    user: 'admin',
+    pwd: 'secret',
+    roles: [{ role: 'root', db: 'admin' }]
+});
+adminDB.auth('admin', 'secret');
+
+adminDB.createUser({
+    user: 'superuser',
+    pwd: 'superuser',
+    roles: [{ role: 'root', db: 'admin' }]
+});
+
+// Authenticate as the root user
+adminDB.auth('superuser', 'superuser');
+
+var dbName = 'sample';
+// Create a new user in the target database
+adminDB.createUser({
+    user: 'sample',
+    pwd: 'sample',
+    roles: [{ role: 'readWrite', db: dbName }]
+});
+
+db = db.getSiblingDB('mydatabase');  // Select the database 'mydatabase'
 
 db.createCollection('tags');
 db.tags.insertMany([
