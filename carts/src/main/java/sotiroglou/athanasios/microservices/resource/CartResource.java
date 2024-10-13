@@ -1,131 +1,92 @@
 package sotiroglou.athanasios.microservices.resource;
 
-import jakarta.inject.Inject;
+import com.mongodb.client.model.Filters;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import sotiroglou.athanasios.microservices.CartNotFoundException;
-import sotiroglou.athanasios.microservices.dto.CartDto;
+import sotiroglou.athanasios.microservices.dto.CartItemDto;
 import sotiroglou.athanasios.microservices.dto.CartQueryDto;
+import sotiroglou.athanasios.microservices.dto.CreateCartDto;
 import sotiroglou.athanasios.microservices.entity.Cart;
 import sotiroglou.athanasios.microservices.entity.CartItem;
-import sotiroglou.athanasios.microservices.mapper.CartItemMapper;
-import sotiroglou.athanasios.microservices.mapper.CartMapper;
-import sotiroglou.athanasios.microservices.repository.CartItemRepository;
-import sotiroglou.athanasios.microservices.repository.CartRepository;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Path("/carts")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CartResource {
 
-    @Inject
-    CartRepository cartRepository;
-
-    @Inject
-    CartItemRepository cartItemRepository;
-
-
-    @Inject
-    CartMapper cartMapper;
-
-    @Inject
-    CartItemMapper cartItemMapper;
 
     @GET
     @Path("/")
     public Iterable<Cart> getAllCarts() {
-        return cartRepository.findAll();
+        List<Cart> carts = Cart.findAll().list();
+        carts.forEach(
+                cart -> {
+                    List<CartItem> items =  CartItem.list("cartId", cart.id);
+                    cart.setCartItems(new HashSet<>(items));  // Populate cartItems in the Cart object
+                }
+        );
+        return carts;
     }
 
+    // Create a new cart
     @POST
-    @Path("/get")
-    public Response getCartById(
-            @RequestBody(required = true) final CartQueryDto cartQueryDto
-    ) {
-        return getResponse(cartQueryDto);
-    }
-
-    @POST
-    @Path("/get/by/customer")
-    public Response getCartByCustomerId(
-            @RequestBody(required = true) final CartQueryDto cartQueryDto
-    ) {
-        return getResponse(cartQueryDto);
+    @Path("/create")
+    public Response createCart(CreateCartDto createCartDto) {
+        Cart cart = new Cart();
+        cart.setCustomerId(new ObjectId(createCartDto.getCustomerId()));
+        Cart.persist(cart);
+        return Response.status(Response.Status.CREATED).entity(cart).build();
     }
 
 
-    @POST
-    @Path("/add")
-    public Response addCart(
-            @RequestBody CartDto cartDto
-    ) {
-        Cart newCart = cartMapper.dtoToEntity(cartDto);
-        for (CartItem cartItem : newCart.getCartItems()) {
-            cartItem.setCart(newCart);
-        }
-        cartRepository.save(newCart);
-        return Response.status(Response.Status.OK).entity(newCart).build();
+    // Get a cart by ID
+    @GET
+    @Path("/customer/{id}")
+    public Response getCartByCustomer(@PathParam("id") String id) {
+        Cart cart = Cart.find("customerId", new ObjectId(id)).firstResult();
+        // Fetch the CartItems using the IDs from the Cart
+        List<CartItem> items = CartItem.list("cartId", cart.id);
+        cart.setCartItems(new HashSet<>(items));  // Populate cartItems in the Cart object
+        return Response.ok(cart).build();
     }
 
-    @DELETE
-    @Path("/delete")
-    public Response deleteCart(
-            @RequestBody(required = true) final CartQueryDto cartQueryDto
-    ) {
-        Response response = getResponse(cartQueryDto);
-        if (response.getStatus() == 200) {
-            Cart cart = (Cart) response.getEntity();
-            cartRepository.delete(cart);
-        }
-
-        return response;
-    }
 
     @POST
     @Path("/add/item")
-    public Response addCartItems(
-            @RequestBody(required = true) final CartQueryDto cartQueryDto
+    public Response addCartItemToCart(
+            @RequestBody(required = true) final CartItemDto cartItemDto
     ) {
-        Response response = getResponse(cartQueryDto);
-        if (response.getStatus() == 200) {
-            Cart cart = (Cart) response.getEntity();
-            Set<CartItem> cartItems = cartItemMapper.dtosToEntities(cartQueryDto.getCartItems());
-            for (CartItem cartItem : cartItems) {
-                cartItem.setCart(cart);
-            }
-            cartItemRepository.saveAll(cartItems);
-            cart = cartRepository.findById(cart.getId()).get();
-            return Response.status(Response.Status.OK).entity(cart).build();
-        }
+        Cart cart = Cart.findById(new ObjectId(cartItemDto.getCartId()));
 
-        return response;
+        CartItem c = new CartItem();
+        c.setCartId(cart.id);
+        System.out.println(c.cartId);
+        c.setQuantity(cartItemDto.getQuantity());
+        c.setProductId(new ObjectId(cartItemDto.getProductId()));
+        CartItem.persist(c);
+        return Response.status(Response.Status.OK).entity(cart).build();
     }
 
-    @POST
+    @PUT
     @Path("/update/item/quantity")
     public Response itemQuantityUpdate(
-            @RequestBody(required = true) final CartQueryDto cartQueryDto
+            @RequestBody(required = true) final CartItemDto cartItemDto
     ) {
-        if (cartQueryDto.getItemQuantityUpdate() != null
-                && cartQueryDto.getItemQuantityUpdate().getId() != null
-        ) {
-            Long itemId = cartQueryDto.getItemQuantityUpdate().getId();
-            Optional<CartItem> optionalCartItem = cartItemRepository.findById(itemId);
-            if (optionalCartItem.isPresent()) {
-                CartItem cartItem = optionalCartItem.get();
-                cartItem.setQuantity(cartQueryDto.getItemQuantityUpdate().getQuantity());
-                cartItem = cartItemRepository.save(cartItem);
-                return Response.status(Response.Status.OK).entity(cartItem).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-        }
-        return Response.status(Response.Status.BAD_REQUEST).build();
+        CartItem cartItem = CartItem.findById(new ObjectId(cartItemDto.getId()));
+        cartItem.setQuantity(cartItemDto.getQuantity());
+        cartItem.persistOrUpdate();
+        return Response.status(Response.Status.OK).build();
     }
 
     @DELETE
@@ -137,13 +98,24 @@ public class CartResource {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        Optional<CartItem> optionalCartItem = cartItemRepository.findById(cartQueryDto.getCartItemIdForDelete());
-        if (optionalCartItem.isPresent()) {
-            cartItemRepository.delete(optionalCartItem.get());
-            return Response.status(Response.Status.OK).build();
-        }
+        CartItem cartItem = CartItem.findById(new ObjectId(cartQueryDto.getCartItemIdForDelete()));
+        CartItem.deleteById(cartItem.id);
 
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.status(Response.Status.OK).build();
+    }
+
+    @DELETE
+    @Path("/emptycart")
+    public Response emptyCart(
+            @RequestBody(required = true) final CartQueryDto cartQueryDto
+    ) {
+        assert cartQueryDto.getCartId() != null;
+        List<CartItem> items = CartItem.list("cartId", new ObjectId(cartQueryDto.getCartId()));
+        items.forEach(
+                item -> CartItem.deleteById(item.id)
+        );
+
+        return Response.status(Response.Status.OK).build();
     }
 
 
@@ -153,18 +125,13 @@ public class CartResource {
         }
 
         if (cartQueryDto.getCartId() != null) {
-            Optional<Cart> cart = cartRepository.findById(cartQueryDto.getCartId());
-            if (cart.isPresent()) {
-                return cart.get();
-            }
+            Cart cart = Cart.findById(cartQueryDto.getCartId());
+            return cart;
         } else {
-            Optional<Cart> cart = cartRepository.findByCustomerId(cartQueryDto.getCustomerId());
-            if (cart.isPresent()) {
-                return cart.get();
-            }
+            Bson filter = Filters.eq("customerId", new ObjectId(String.valueOf(cartQueryDto.getCustomerId())));
+            Cart cart = Cart.find("customerId", new ObjectId(String.valueOf(cartQueryDto.getCustomerId()))).firstResult();
+            return cart;
         }
-
-        throw new CartNotFoundException(String.format("CartId=%s and CustomerId=%s do not exist in the DB", cartQueryDto.getCartId(), cartQueryDto.getCustomerId()));
 
     }
 

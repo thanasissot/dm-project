@@ -6,10 +6,10 @@ import lombok.Data;
 @Builder
 @Data
 public class CartItemDto {
-    private Long id;
+    private String id;
     private Integer quantity;
     private Double unitPrice;
-    private Long cartId;
-    private Long productId;
+    private String cartId;
+    private String productId;
 }
 

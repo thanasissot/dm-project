@@ -4,11 +4,10 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.event.Startup;
-import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.bson.types.ObjectId;
 import sotiroglou.athanasios.microservices.entity.Cart;
 import sotiroglou.athanasios.microservices.entity.CartItem;
-import sotiroglou.athanasios.microservices.repository.CartRepository;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -16,54 +15,57 @@ import java.util.Set;
 @ApplicationScoped
 public class DataInitializer {
 
-    @Inject
-    CartRepository cartRepository;
-
     private void forceEagerInitialization(@Observes Startup startup) {
     }
 
     @PostConstruct
     @Transactional
     public void initializeData() {
-        System.out.println("Initializing data... count=" + cartRepository.count());
-        if (cartRepository.count() == 0) {
-            Cart cart1 = Cart.builder()
-                    .customerId(101L)
-                    .build();
+        if (Cart.count() == 0) {
+            System.out.println("Initializing data... count=" + Cart.count());
 
-            Cart cart2 = Cart.builder()
-                    .customerId(102L)
-                    .build();
+            // Create carts
+            Cart cart1 = new Cart();
+//            cart1.customerId = new ObjectId();  // Simulating customerId for example
 
-            // Create CartItem instances using builder and associate them with carts
-            CartItem item1 = CartItem.builder()
-                    .quantity(2)
-                    .unitPrice(29.99)
-                    .productId(1001L)
-                    .cart(cart1)
-                    .build();
+            Cart cart2 = new Cart();
+//            cart2.customerId = new ObjectId();
 
-            CartItem item2 = CartItem.builder()
-                    .quantity(1)
-                    .unitPrice(59.99)
-                    .productId(1002L)
-                    .cart(cart1)
-                    .build();
+            // Save the carts
+            cart1.persist();
+            cart2.persist();
 
-            CartItem item3 = CartItem.builder()
-                    .quantity(3)
-                    .unitPrice(15.99)
-                    .productId(1003L)
-                    .cart(cart2)
-                    .build();
+            // Create CartItem instances
+            CartItem item1 = new CartItem();
+            item1.quantity = 2;
+            item1.productId = new ObjectId();
+            item1.cartId = cart1.id;
+            item1.id = new ObjectId();
+
+            CartItem item2 = new CartItem();
+            item2.quantity = 1;
+            item2.productId = new ObjectId();
+            item2.id = new ObjectId();
+            item2.cartId = cart1.id;
+
+            CartItem item3 = new CartItem();
+            item3.quantity = 3;
+            item3.productId = new ObjectId();
+            item3.id = new ObjectId();
+            item3.cartId = cart2.id;
 
             // Associate CartItems with the corresponding carts
-            cart1.setCartItems(Set.of(item1, item2));
-            cart2.setCartItems(Set.of(item3));
+            cart1.cartItems = Set.of(item1, item2);
+            cart2.cartItems = Set.of(item3);
 
-            cartRepository.save(cart1);
-            cartRepository.save(cart2);
+            // Save the carts
+            Cart.persist(cart1);
+            Cart.persist(cart2);
+
+            // Persist items manually as there are no automatic relationships in MongoDB
+            item1.persist();
+            item2.persist();
+            item3.persist();
         }
     }
-
 }

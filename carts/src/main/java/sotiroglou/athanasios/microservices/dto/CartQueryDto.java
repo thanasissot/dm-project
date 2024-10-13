@@ -8,13 +8,13 @@ import java.util.Set;
 @Data
 public class CartQueryDto {
     @Nullable
-    private Long cartId;
+    private String cartId;
     @Nullable
-    private Long customerId;
+    private String customerId;
     @Nullable
     private Set<CartItemDto> cartItems;
     @Nullable
-    private Long cartItemIdForDelete;
+    private String cartItemIdForDelete;
     @Nullable
     private ItemQuantityUpdateDto itemQuantityUpdate;
 

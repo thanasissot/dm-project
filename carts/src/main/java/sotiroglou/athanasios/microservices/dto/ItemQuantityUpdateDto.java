@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class ItemQuantityUpdateDto {
     private int quantity;
-    private Long id;
+    private String id;
 }
