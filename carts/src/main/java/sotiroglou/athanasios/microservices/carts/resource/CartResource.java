@@ -31,7 +31,9 @@ public class CartResource {
         return carts.stream().map(
                 cart -> {
                     List<CartItem> items =  CartItem.list("cartId", cart.id);
-                    return CartResponseDto.builder().customerId(cart.customerId.toString()).cartItems(new HashSet<>(items)).build();
+                    return CartResponseDto.builder().customerId(cart.customerId.toString())
+                            .cartId(cart.id.toString())
+                            .cartItems(new HashSet<>(items)).build();
                 }
         ).toList();
     }
@@ -54,7 +56,9 @@ public class CartResource {
         Cart cart = Cart.find("customerId", new ObjectId(id)).firstResult();
         // Fetch the CartItems using the IDs from the Cart
         List<CartItem> items = CartItem.list("cartId", cart.id);
-        CartResponseDto responseDto = CartResponseDto.builder().customerId(cart.customerId.toString()).cartItems(new HashSet<>(items)).build();
+        CartResponseDto responseDto = CartResponseDto.builder().customerId(cart.customerId.toString())
+                .cartId(cart.id.toString())
+                .cartItems(new HashSet<>(items)).build();
         return Response.ok(responseDto).build();
     }
 
@@ -111,6 +115,23 @@ public class CartResource {
         items.forEach(
                 item -> CartItem.deleteById(item.id)
         );
+
+        return Response.status(Response.Status.OK).build();
+    }
+
+    @DELETE
+    @Path("/deletecart")
+    public Response deleteCart(
+            @RequestBody(required = true) final CartQueryDto cartQueryDto
+    ) {
+        assert cartQueryDto.getCartId() != null;
+        List<CartItem> items = CartItem.list("cartId", new ObjectId(cartQueryDto.getCartId()));
+        items.forEach(
+                item -> CartItem.deleteById(item.id)
+        );
+
+        Cart cart = Cart.findById(new ObjectId(cartQueryDto.getCartId()));
+        Cart.deleteById(cart.id);
 
         return Response.status(Response.Status.OK).build();
     }

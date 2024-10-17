@@ -3,6 +3,7 @@ package sotiroglou.athanasios.microservices.users.resource;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import sotiroglou.athanasios.microservices.users.users.Address;
@@ -24,6 +25,13 @@ public class AddressResource {
     public Response getAddressById(@PathParam("id") String id) {
         Address address = Address.findById(new ObjectId(id));
         return Response.ok(address).build();
+    }
+
+    @GET
+    @Path("/customer/{customerId}")
+    public Response getAddressByCustomerId(@PathParam("customerId") String customerId) {
+        List<Address> addresses = Address.find(new Document("userId", new ObjectId(customerId))).list();
+        return Response.ok(addresses).build();
     }
 
     @POST

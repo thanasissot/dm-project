@@ -3,6 +3,7 @@ package sotiroglou.athanasios.microservices.users.resource;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import sotiroglou.athanasios.microservices.users.users.Card;
@@ -24,6 +25,13 @@ public class CardResource {
     public Response getCardById(@PathParam("id") String id) {
         Card card = Card.findById(new ObjectId(id));
         return Response.ok(card).build();
+    }
+
+    @GET
+    @Path("/customer/{customerId}")
+    public Response getCardByCustomerId(@PathParam("customerId") String customerId) {
+        List<Card> cards = Card.find(new Document("userId", new ObjectId(customerId))).list();
+        return Response.ok(cards).build();
     }
 
     @POST

@@ -33,7 +33,7 @@ public class UserResource {
     }
 
     @GET
-    @Path("/{customerId}")
+    @Path("/customer/{customerId}")
     public Response getUserByCustomerId(@PathParam("customerId") String customerId) {
         User user = User.find("customerId", new ObjectId(customerId)).singleResult();
         List<Address> addresses = Address.find("userId", user.id).list();

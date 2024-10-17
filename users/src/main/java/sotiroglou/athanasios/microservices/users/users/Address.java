@@ -19,4 +19,8 @@ public class Address extends PanacheMongoEntity {
     public String country;
     public String postCode;
     public ObjectId userId;
+
+    public String toString() {
+        return String.format("%s %s %s %s %s", street, numberS, city, country, postCode);
+    }
 }

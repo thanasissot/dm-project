@@ -9,6 +9,8 @@ adminDB.auth('admin', 'secret');
 
 db = db.getSiblingDB('mydatabase');  // Select the database 'mydatabase'
 
+db.createCollection('orders');
+
 db.createCollection('carts');
 db.carts.insertMany([
     {_id: ObjectId("111111111111111111111111"), customerId: ObjectId("111111111111111111111111")},
@@ -204,4 +206,39 @@ db.users.insertMany([
         password: "user2pass",
         salt: "user2salt" },
 ]);
+
+db.createCollection('addresses');
+db.addresses.insertMany([
+    {
+        _id: ObjectId("111111111111111111111111"), userId: ObjectId("111111111111111111111111"),
+        street: "street1", numberS: 1, city: "city1", country: "country1", postCode: "postCode1"
+    },
+    {
+        _id: ObjectId("222222222222222222222222"), userId: ObjectId("111111111111111111111111"),
+        street: "street2", numberS: 2, city: "city1", country: "country1", postCode: "postCode2"
+    },
+    {
+        _id: ObjectId("333333333333333333333333"), userId: ObjectId("222222222222222222222222"),
+        street: "street3", numberS: 3, city: "city1", country: "country1", postCode: "postCode3"
+    },
+
+]);
+
+db.createCollection('cards');
+db.cards.insertMany([
+    {
+        _id: ObjectId("111111111111111111111111"), userId: ObjectId("111111111111111111111111"),
+        cardNumber: "cardNumber1", expires: "never", ccv: "221"
+    },
+    {
+        _id: ObjectId("222222222222222222222222"), userId: ObjectId("111111111111111111111111"),
+        cardNumber: "cardNumber2", expires: "never", ccv: "222"
+    },
+    {
+        _id: ObjectId("333333333333333333333333"), userId: ObjectId("222222222222222222222222"),
+        cardNumber: "cardNumber3", expires: "10 days ago", ccv: "223"
+    },
+
+]);
+
 

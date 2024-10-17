@@ -9,6 +9,7 @@ import java.util.Set;
 @Data
 @Builder
 public class CartResponseDto {
+    private String cartId;
 
     private String customerId;
 

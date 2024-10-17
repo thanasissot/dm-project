@@ -15,7 +15,8 @@
         <module>payments</module>
         <module>users</module>
         <module>orders</module>
-<!--        <module>jms</module>-->
+        <module>tester</module>
+        <!--        <module>jms</module>-->
 <!--        <module>auth</module>-->
 <!--        <module>front-end</module>-->
     </modules>

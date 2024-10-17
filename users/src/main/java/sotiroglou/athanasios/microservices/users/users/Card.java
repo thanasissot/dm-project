@@ -17,4 +17,8 @@ public class Card extends PanacheMongoEntity {
     public String expires;
     public String ccv;
     public ObjectId userId;
+
+    public String toString() {
+        return String.format("%s %s %s", cardNumber, expires, ccv);
+    }
 }

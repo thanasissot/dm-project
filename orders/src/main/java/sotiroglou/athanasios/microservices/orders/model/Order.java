@@ -16,5 +16,7 @@ import java.time.LocalDate;
 public class Order extends PanacheMongoEntity {
     public ObjectId customerId;
     public LocalDate orderDate;
-
+    public float totalAmount;
+    public String shippingAddress;
+    public String cardDetails;
 }

@@ -4,7 +4,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import sotiroglou.athanasios.microservices.model.carts.Cart;
 import sotiroglou.athanasios.microservices.model.carts.CartItem;
@@ -12,13 +11,17 @@ import sotiroglou.athanasios.microservices.model.catalogue.dto.SockIdListDto;
 import sotiroglou.athanasios.microservices.model.catalogue.dto.SockPriceDto;
 import sotiroglou.athanasios.microservices.model.payment.AuthoriseRequest;
 import sotiroglou.athanasios.microservices.model.payment.AuthoriseResponse;
+import sotiroglou.athanasios.microservices.model.users.Address;
+import sotiroglou.athanasios.microservices.model.users.Card;
 import sotiroglou.athanasios.microservices.model.users.User;
 import sotiroglou.athanasios.microservices.orders.model.ApiResponse;
+import sotiroglou.athanasios.microservices.orders.model.Order;
 import sotiroglou.athanasios.microservices.orders.service.CartService;
 import sotiroglou.athanasios.microservices.orders.service.CatalogueService;
 import sotiroglou.athanasios.microservices.orders.service.PaymentsService;
 import sotiroglou.athanasios.microservices.orders.service.UserService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -88,8 +91,25 @@ public class OrderResource {
 
         if (authoriseResponse.isAuthorised()) {
             // payment is cleared, request USER data to store Order in DB
-            User user = userService.getByIdAsync(customerId)
+            User user = userService.getUserById(customerId)
                     .thenApply(dto -> dto).toCompletableFuture().get();
+            List<Address> addresses = userService.getAddresses(customerId)
+                    .thenApply(dto -> dto).toCompletableFuture().get();
+            List<Card> cards = userService.getCards(customerId)
+                    .thenApply(dto -> dto).toCompletableFuture().get();
+
+            Order order = new Order();
+            order.setCustomerId(user.customerId);
+            order.setOrderDate(LocalDate.now());
+            order.setTotalAmount(amount);
+            order.setShippingAddress(
+                    addresses.get(0).toString()
+            );
+            order.setCardDetails(
+                    cards.get(0).toString()
+            );
+
+            Order.persist(order);
 
             return new ApiResponse(200, "ORDER CREATED");
 
