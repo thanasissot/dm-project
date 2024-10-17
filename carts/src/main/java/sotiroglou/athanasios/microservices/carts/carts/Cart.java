@@ -14,7 +14,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@MongoEntity(collection="carts")
+@MongoEntity(database = "carts_db", collection="carts")
 public class Cart extends PanacheMongoEntity {
 
     public ObjectId customerId;

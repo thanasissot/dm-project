@@ -10,7 +10,7 @@ import org.bson.types.ObjectId;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@MongoEntity(collection="addresses")
+@MongoEntity(database = "users_db", collection="addresses")
 public class Address extends PanacheMongoEntity {
 
     public String street;

@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@MongoEntity(collection="socks")
+@MongoEntity(database = "catalogue_db", collection="socks")
 public class Sock extends PanacheMongoEntity {
     public String name;
     public String description;

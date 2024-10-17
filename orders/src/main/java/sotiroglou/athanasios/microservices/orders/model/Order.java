@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@MongoEntity(collection="orders")
+@MongoEntity(database = "orders_db", collection="orders")
 public class Order extends PanacheMongoEntity {
     public ObjectId customerId;
     public LocalDate orderDate;

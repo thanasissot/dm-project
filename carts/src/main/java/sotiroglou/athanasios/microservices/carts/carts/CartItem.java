@@ -10,7 +10,7 @@ import org.bson.types.ObjectId;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@MongoEntity(collection="cartitems")
+@MongoEntity(database = "carts_db", collection="cartitems")
 public class CartItem extends PanacheMongoEntity {
 
     public ObjectId cartId;

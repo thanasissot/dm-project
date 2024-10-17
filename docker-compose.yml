@@ -1,19 +1,80 @@
 
 services:
-  cart-db:
+#  cart-db:
+#    image: mongo:latest
+#    container_name: mongo
+#    restart: always
+#    command: --bind_ip_all
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: admin
+#      MONGO_INITDB_ROOT_PASSWORD: secret
+#      MONGO_INITDB_DATABASE: mydatabase
+#    ports:
+#      - "27017:27017"
+#    volumes:
+#      - mongodb_data:/data/
+#      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js  # Mount the script
+
+
+  mongo-carts:
     image: mongo:latest
-    container_name: mongo
+    container_name: mongo-carts
     restart: always
     command: --bind_ip_all
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: secret
-      MONGO_INITDB_DATABASE: mydatabase
+      MONGO_INITDB_DATABASE: carts_db
     ports:
-      - "27017:27017"
+      - "27018:27017"  # Port specific to this Mongo instance
     volumes:
-      - mongodb_data:/data/
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js  # Mount the script
+      - carts_mongodb_data:/data/db
+      - ./mongo/carts-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+
+  mongo-catalogue:
+    image: mongo:latest
+    container_name: mongo-catalogue
+    restart: always
+    command: --bind_ip_all
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_DATABASE: catalogue_db
+    ports:
+      - "27019:27017"
+    volumes:
+      - catalogue_mongodb_data:/data/db
+      - ./mongo/catalogue-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+
+  mongo-orders:
+    image: mongo:latest
+    container_name: mongo-orders
+    restart: always
+    command: --bind_ip_all
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_DATABASE: orders_db
+    ports:
+      - "27020:27017"
+    volumes:
+      - orders_mongodb_data:/data/db
+      - ./mongo/orders-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+
+  mongo-users:
+    image: mongo:latest
+    container_name: mongo-users
+    restart: always
+    command: --bind_ip_all
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_DATABASE: users_db
+    ports:
+      - "27021:27017"
+    volumes:
+      - users_mongodb_data:/data/db
+      - ./mongo/users-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
 
   carts:
     container_name: carts
@@ -21,12 +82,12 @@ services:
       context: carts  # This should be the path to your root project folder where 'src' is located
       dockerfile: ./src/main/docker/Dockerfile.jvm  # Path to Dockerfile relative to the context
     environment:
-      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin
-      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin"
+      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo-carts:27017/carts_db?authSource=admin
+      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo-carts:27017/carts_db?authSource=admin"
     ports:
       - "8088:8080"
     depends_on:
-      - cart-db
+      - mongo-carts
 
 
   catalogue:
@@ -35,14 +96,14 @@ services:
       context: catalogue
       dockerfile: ./src/main/docker/Dockerfile.jvm
     environment:
-      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin
+      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo-catalogue:27017/catalogue_db?authSource=admin
 #      JAVA_OPTS_APPEND: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Dquarkus.profile=docker -Dimage.dir=/opt/images -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin"
-      JAVA_OPTS_APPEND: "-Dquarkus.profile=docker -Dimage.dir=/opt/images -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin"
+      JAVA_OPTS_APPEND: "-Dquarkus.profile=docker -Dimage.dir=/opt/images -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo-catalogue:27017/catalogue_db?authSource=admin"
     ports:
       - "8089:8080"
       - "5059:5005"
     depends_on:
-      - cart-db
+      - mongo-catalogue
 
   payments:
     container_name: payments
@@ -61,12 +122,12 @@ services:
       context: orders
       dockerfile: ./src/main/docker/Dockerfile.jvm
     environment:
-      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin
-      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager  -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin"
+      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo-orders:27017/orders_db?authSource=admin
+      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager  -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo-orders:27017/orders_db?authSource=admin"
     ports:
       - "8091:8080"
     depends_on:
-      - cart-db
+      - mongo-orders
 
 
   users:
@@ -75,12 +136,13 @@ services:
       context: users
       dockerfile: ./src/main/docker/Dockerfile.jvm
     environment:
-      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin
-      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager  -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin"
+      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo-users:27017/users_db?authSource=admin
+      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager  -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo-users:27017/users_db?authSource=admin"
     ports:
       - "8093:8080"
     depends_on:
-      - cart-db
+      - mongo-users
+
 
   tester:
     container_name: tester
@@ -88,13 +150,15 @@ services:
       context: tester
       dockerfile: ./src/main/docker/Dockerfile.jvm
     environment:
-      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin
-      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager  -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin"
+      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
     ports:
       - "8099:8080"
     depends_on:
-      - cart-db
+      - carts
 
 
 volumes:
-  mongodb_data:
+  carts_mongodb_data:
+  catalogue_mongodb_data:
+  orders_mongodb_data:
+  users_mongodb_data:

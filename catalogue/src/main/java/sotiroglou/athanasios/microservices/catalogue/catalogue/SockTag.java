@@ -10,7 +10,7 @@ import org.bson.types.ObjectId;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@MongoEntity(collection="sockTags")
+@MongoEntity(database = "catalogue_db", collection="sockTags")
 public class SockTag extends PanacheMongoEntity {
     public ObjectId sockId;
     public ObjectId tagId;

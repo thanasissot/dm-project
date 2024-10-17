@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@MongoEntity(collection="tags")
+@MongoEntity(database = "catalogue_db", collection="tags")
 public class Tag extends PanacheMongoEntity {
     public String name;
 }

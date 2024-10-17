@@ -10,7 +10,7 @@ import org.bson.types.ObjectId;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@MongoEntity(collection="users")
+@MongoEntity(database = "users_db", collection="users")
 public class User extends PanacheMongoEntity {
 
     public ObjectId customerId;
