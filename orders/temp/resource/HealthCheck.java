@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.resource;
+package sotiroglou.athanasios.microservices.orders.resource;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;

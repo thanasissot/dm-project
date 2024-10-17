@@ -22,9 +22,9 @@ import com.ibm.msg.client.jakarta.wmq.WMQConstants;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.jms.*;
-import sotiroglou.athanasios.microservices.utils.JmsExceptionHelper;
-import sotiroglou.athanasios.microservices.utils.JwtHelper;
-import sotiroglou.athanasios.microservices.utils.SampleEnvSetter;
+import sotiroglou.athanasios.microservices.orders.utils.JmsExceptionHelper;
+import sotiroglou.athanasios.microservices.orders.utils.JwtHelper;
+import sotiroglou.athanasios.microservices.orders.utils.SampleEnvSetter;
 
 import java.util.logging.*;
 

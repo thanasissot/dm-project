@@ -1,8 +1,11 @@
 package sotiroglou.athanasios.microservices.model.payment;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthoriseRequest {
     private float amount;
 }

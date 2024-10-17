@@ -1,16 +1,13 @@
 package sotiroglou.athanasios.microservices.model.users;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
-import io.quarkus.mongodb.panache.common.MongoEntity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bson.types.ObjectId;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
 @AllArgsConstructor
-@MongoEntity(collection="addresses")
+@RequiredArgsConstructor
 public class Address extends PanacheMongoEntity {
 
     public String street;

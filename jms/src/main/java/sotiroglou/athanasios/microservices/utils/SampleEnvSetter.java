@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.utils;
+package sotiroglou.athanasios.microservices.orders.utils;
 
 /*
  * (c) Copyright IBM Corporation 2019, 2024

@@ -36,10 +36,10 @@ import com.ibm.msg.client.jakarta.wmq.WMQConstants;
 import com.ibm.mq.jakarta.jms.MQDestination;
 
 import com.ibm.msg.client.jakarta.jms.DetailedInvalidDestinationRuntimeException;
-import sotiroglou.athanasios.microservices.utils.JmsExceptionHelper;
-import sotiroglou.athanasios.microservices.utils.JwtHelper;
-import sotiroglou.athanasios.microservices.utils.RequestResponseHelper;
-import sotiroglou.athanasios.microservices.utils.SampleEnvSetter;
+import sotiroglou.athanasios.microservices.orders.utils.JmsExceptionHelper;
+import sotiroglou.athanasios.microservices.orders.utils.JwtHelper;
+import sotiroglou.athanasios.microservices.orders.utils.RequestResponseHelper;
+import sotiroglou.athanasios.microservices.orders.utils.SampleEnvSetter;
 
 // Use these imports for building with Jakarta Messaging
 // import jakarta.jms.Destination;

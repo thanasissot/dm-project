@@ -1,26 +1,18 @@
 package sotiroglou.athanasios.microservices.model.users;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
-import io.quarkus.mongodb.panache.common.MongoEntity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bson.types.ObjectId;
 
 import java.util.List;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
 @AllArgsConstructor
-@MongoEntity(collection="users")
+@RequiredArgsConstructor
 public class User extends PanacheMongoEntity {
 
-    // These fields will not be persisted
-    @JsonIgnore
     public List<Address> addresses;
-
-    @JsonIgnore
     public List<Card> cards;
 
     public ObjectId customerId;

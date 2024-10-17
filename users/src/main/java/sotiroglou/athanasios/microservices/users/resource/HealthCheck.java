@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.MediaType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import sotiroglou.athanasios.microservices.model.users.User;
+import sotiroglou.athanasios.microservices.users.users.User;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

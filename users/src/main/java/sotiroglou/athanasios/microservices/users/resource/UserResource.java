@@ -28,8 +28,6 @@ public class UserResource {
         User user = User.findById(new ObjectId(id));
         List<Address> addresses = Address.find("userId", user.id).list();
         List<Card> cards = Card.find("userId", user.id).list();
-        user.setAddresses(addresses);
-        user.setCards(cards);
         return Response.ok(user).build();
 
     }
@@ -40,8 +38,6 @@ public class UserResource {
         User user = User.find("customerId", new ObjectId(customerId)).singleResult();
         List<Address> addresses = Address.find("userId", user.id).list();
         List<Card> cards = Card.find("userId", user.id).list();
-        user.setAddresses(addresses);
-        user.setCards(cards);
         return Response.ok(user).build();
 
     }

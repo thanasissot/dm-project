@@ -56,10 +56,10 @@ import com.ibm.msg.client.jakarta.jms.DetailedInvalidDestinationRuntimeException
 
 import com.ibm.mq.constants.MQConstants;
 import com.ibm.mq.MQException;
-import sotiroglou.athanasios.microservices.utils.JmsExceptionHelper;
-import sotiroglou.athanasios.microservices.utils.JwtHelper;
-import sotiroglou.athanasios.microservices.utils.RequestResponseHelper;
-import sotiroglou.athanasios.microservices.utils.SampleEnvSetter;
+import sotiroglou.athanasios.microservices.orders.utils.JmsExceptionHelper;
+import sotiroglou.athanasios.microservices.orders.utils.JwtHelper;
+import sotiroglou.athanasios.microservices.orders.utils.RequestResponseHelper;
+import sotiroglou.athanasios.microservices.orders.utils.SampleEnvSetter;
 
 public class JmsResponse {
     private static final String DEFAULT_APP_NAME = "Dev Experience JmsResponse";

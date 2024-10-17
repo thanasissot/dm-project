@@ -1,0 +1,25 @@
+use admin;
+db.auth('admin', 'secret')
+
+use mydatabase;
+
+db.createCollection('users');
+db.users.insertMany([
+    {_id: ObjectId("111111111111111111111111"),
+        customerId: ObjectId("111111111111111111111111"),
+        firstName: "user1",
+        lastName: "user1",
+        email: "user1@mail.com",
+        username: "user1user",
+        password: "user1pass",
+        salt: "user1salt" },
+
+    {_id: ObjectId("222222222222222222222222"),
+        customerId: ObjectId("222222222222222222222222"),
+        firstName: "user2",
+        lastName: "user2",
+        email: "user2@mail.com",
+        username: "user2user",
+        password: "user2pass",
+        salt: "user2salt" },
+]);

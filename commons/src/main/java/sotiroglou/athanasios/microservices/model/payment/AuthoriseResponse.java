@@ -1,10 +1,9 @@
 package sotiroglou.athanasios.microservices.model.payment;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class AuthoriseResponse {

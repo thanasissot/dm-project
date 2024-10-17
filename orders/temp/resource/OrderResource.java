@@ -1,12 +1,12 @@
-package sotiroglou.athanasios.microservices.resource;
+package sotiroglou.athanasios.microservices.orders.resource;
 
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.springframework.beans.factory.annotation.Value;
-import sotiroglou.athanasios.microservices.commons.InvalidOrderException;
-import sotiroglou.athanasios.microservices.commons.NewOrderResource;
+import sotiroglou.athanasios.microservices.orders.exception.InvalidOrderException;
+import sotiroglou.athanasios.microservices.orders.exception.NewOrderResource;
 import sotiroglou.athanasios.microservices.entity.CustomerOrder;
 
 import java.io.IOException;

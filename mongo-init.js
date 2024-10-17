@@ -1,42 +1,30 @@
-
-// Initialize the replica set
-rs.initiate({
-    _id: 'rs0',
-    members: [
-        { _id: 0, host: 'localhost:27017' }
-        // Add more members here if you want to set up additional nodes
-    ]
-});
-
 // Authenticate as the root user
+var dbName = 'mydatabase';
+// db.auth('admin','secret')
 
 // Use admin then create user root
 var adminDB = db.getSiblingDB('admin');
-adminDB.createUser({
-    user: 'admin',
-    pwd: 'secret',
-    roles: [{ role: 'root', db: 'admin' }]
-});
+
 adminDB.auth('admin', 'secret');
 
-adminDB.createUser({
-    user: 'superuser',
-    pwd: 'superuser',
-    roles: [{ role: 'root', db: 'admin' }]
-});
-
-// Authenticate as the root user
-adminDB.auth('superuser', 'superuser');
-
-var dbName = 'sample';
-// Create a new user in the target database
-adminDB.createUser({
-    user: 'sample',
-    pwd: 'sample',
-    roles: [{ role: 'readWrite', db: dbName }]
-});
-
 db = db.getSiblingDB('mydatabase');  // Select the database 'mydatabase'
+
+db.createCollection('carts');
+db.carts.insertMany([
+    {_id: ObjectId("111111111111111111111111"), customerId: ObjectId("111111111111111111111111")},
+    {_id: ObjectId("222222222222222222222222"), customerId: ObjectId("222222222222222222222222")}
+])
+
+db.createCollection('cartitems');
+db.cartitems.insertMany([
+    {_id: ObjectId("111111111111111111111111"), cartId: ObjectId("111111111111111111111111"),
+    quantity: 1, productId: ObjectId("6d62d909f957430e8689b512")},
+    {_id: ObjectId("222222222222222222222222"), cartId: ObjectId("111111111111111111111111"),
+    quantity: 2, productId: ObjectId("a0a4f044b040410d8ead4de0")},
+
+    {_id: ObjectId("333333333333333333333333"), cartId: ObjectId("222222222222222222222222"),
+        quantity: 2, productId: ObjectId("808a2de11aaa4c25a9b96612")},
+])
 
 db.createCollection('tags');
 db.tags.insertMany([
@@ -195,3 +183,25 @@ db.sockTags.insertMany([
     { "sockId": ObjectId("837ab141399e4c1f9abcbace"), "tagId": ObjectId("111111111111111111111113") },  // Tag 11: green
     { "sockId": ObjectId("837ab141399e4c1f9abcbace"), "tagId": ObjectId("333333333333333333333333") }   // Tag 3: formal
 ]);
+
+db.createCollection('users');
+db.users.insertMany([
+    {_id: ObjectId("111111111111111111111111"),
+        customerId: ObjectId("111111111111111111111111"),
+        firstName: "user1",
+        lastName: "user1",
+        email: "user1@mail.com",
+        username: "user1user",
+        password: "user1pass",
+        salt: "user1salt" },
+
+    {_id: ObjectId("222222222222222222222222"),
+        customerId: ObjectId("222222222222222222222222"),
+        firstName: "user2",
+        lastName: "user2",
+        email: "user2@mail.com",
+        username: "user2user",
+        password: "user2pass",
+        salt: "user2salt" },
+]);
+

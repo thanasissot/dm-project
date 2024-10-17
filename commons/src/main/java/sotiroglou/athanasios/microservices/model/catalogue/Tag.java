@@ -1,15 +1,12 @@
 package sotiroglou.athanasios.microservices.model.catalogue;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
-import io.quarkus.mongodb.panache.common.MongoEntity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
 @AllArgsConstructor
-@MongoEntity(collection="tags")
+@RequiredArgsConstructor
 public class Tag extends PanacheMongoEntity {
     public String name;
 }
