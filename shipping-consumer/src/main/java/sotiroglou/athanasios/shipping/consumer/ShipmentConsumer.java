@@ -24,7 +24,7 @@ public class ShipmentConsumer implements Runnable {
     private volatile String lastPrice;
 
     void onStart(@Observes StartupEvent ev) {
-        scheduler.scheduleWithFixedDelay(this, 0L, 5L, TimeUnit.SECONDS);
+        scheduler.scheduleWithFixedDelay(this, 0L, 25L, TimeUnit.SECONDS);
     }
 
     void onStop(@Observes ShutdownEvent ev) {
@@ -35,11 +35,10 @@ public class ShipmentConsumer implements Runnable {
     public void run() {
         try (JMSContext context = connectionFactory.createContext(JMSContext.AUTO_ACKNOWLEDGE)) {
             JMSConsumer consumer = context.createConsumer(context.createQueue("shipments"));
-            while (true) {
-                Message message = consumer.receive();
-                if (message == null) return;
-                lastPrice = message.getBody(String.class);
-            }
+            Message message = consumer.receive();
+            if (message == null) return;
+            lastPrice = message.getBody(String.class);
+            System.out.println("Last price: " + lastPrice);
         } catch (JMSException e) {
             throw new RuntimeException(e);
         }

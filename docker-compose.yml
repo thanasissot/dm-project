@@ -157,17 +157,20 @@ services:
       - carts
 
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
+  artemis:
+    image: quay.io/artemiscloud/activemq-artemis-broker:1.0.25
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "8161:8161"   # Management Console
+      - "61616:61616" # OpenWire
+      - "5672:5672"   # AMQP
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      AMQ_USER: quarkus
+      AMQ_PASSWORD: quarkus
+      AMQ_EXTRA_ARGS: "--relax-jolokia"
+    restart: always
 #      rabbitmq-plugins enable rabbitmq_management
 #      http://localhost:15672/#/
+#      http://localhost:8161/console/
 
 
   shipping:
@@ -176,23 +179,26 @@ services:
       context: shipping
       dockerfile: ./src/main/docker/Dockerfile.jvm
     depends_on:
-      - rabbitmq
+      - artemis
     environment:
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_PORT: 5672
+      QUARKUS_QPID_JMS_URL: amqp://artemis:5672  # Pointing to Artemis
+      QUARKUS_QPID_JMS_USERNAME: quarkus  # Username for Artemis
+      QUARKUS_QPID_JMS_PASSWORD: quarkus  # Password for Artemis
     ports:
       - "8095:8080"
+
 
   shipping-consumer:
     container_name: shipping-consumer
     build:
-      context: shippingConsumer
+      context: shipping-consumer
       dockerfile: ./src/main/docker/Dockerfile.jvm
     depends_on:
-      - rabbitmq
+      - artemis
     environment:
-      MQ_HOST: rabbitmq
-      CONSUMER_POLL_INTERVAL: 5s
+      QUARKUS_QPID_JMS_URL: amqp://artemis:5672  # Pointing to Artemis
+      QUARKUS_QPID_JMS_USERNAME: quarkus  # Username for Artemis
+      QUARKUS_QPID_JMS_PASSWORD: quarkus  # Password for Artemis
 
 
 volumes:
