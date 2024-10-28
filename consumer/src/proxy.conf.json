@@ -1,0 +1,11 @@
+{
+    "/apic": {
+        "target": "http://catalogue:8080",
+        "secure": false,
+        "pathRewrite": {
+          "^/apic": ""
+        },
+        "changeOrigin": true,
+        "logLevel": "debug"
+    }
+}

@@ -1,0 +1,61 @@
+FROM node:18.19.0 as build
+
+WORKDIR /app
+
+COPY ../package*.json ./
+
+RUN npm install
+
+RUN npm install -g @angular/cli
+
+#COPY . .
+
+COPY . /app
+
+RUN ng build
+
+CMD ng serve --host 0.0.0.0 --port 4200
+#
+#
+##FROM nginx:latest
+#
+##COPY --from=build app/dist/consumer /usr/share/nginx/html
+##
+##EXPOSE 80
+
+#Download Node Alpine image
+#FROM node:21 As build
+#
+##Setup the working directory
+#WORKDIR /usr/src/app
+#
+##Copy package.json
+#COPY package.json ./
+#COPY package-lock.json ./
+#
+##Install dependencies
+#RUN npm install
+#
+##Copy other files and folder to working directory
+#COPY docker .
+#
+##Build Angular application in PROD mode
+#RUN npm run build --prod
+#
+##Download NGINX Image
+#FROM nginx:alpine
+#
+##Copy built angular app files to NGINX HTML folder
+#COPY --from=build /usr/src/app/dist/consumer/ /usr/share/nginx/html
+
+#FROM node:alpine
+#
+#WORKDIR /usr/src/app
+#
+#COPY . /usr/src/app
+#
+#RUN npm install -g @angular/cli --loglevel verbose
+#
+#RUN npm install
+#
+#CMD ["ng", "serve", "--host", "0.0.0.0"]

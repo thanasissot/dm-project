@@ -1,4 +1,6 @@
 
+
+
 services:
 #  cart-db:
 #    image: mongo:latest
@@ -30,6 +32,9 @@ services:
     volumes:
       - carts_mongodb_data:/data/db
       - ./mongo/carts-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    networks:
+      - app-network
+
 
   mongo-catalogue:
     image: mongo:latest
@@ -45,6 +50,9 @@ services:
     volumes:
       - catalogue_mongodb_data:/data/db
       - ./mongo/catalogue-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    networks:
+      - app-network
+
 
   mongo-orders:
     image: mongo:latest
@@ -60,6 +68,9 @@ services:
     volumes:
       - orders_mongodb_data:/data/db
       - ./mongo/orders-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    networks:
+      - app-network
+
 
   mongo-users:
     image: mongo:latest
@@ -75,6 +86,9 @@ services:
     volumes:
       - users_mongodb_data:/data/db
       - ./mongo/users-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    networks:
+      - app-network
+
 
   carts:
     container_name: carts
@@ -88,7 +102,8 @@ services:
       - "8088:8080"
     depends_on:
       - mongo-carts
-
+    networks:
+      - app-network
 
   catalogue:
     container_name: catalogue
@@ -104,6 +119,8 @@ services:
       - "5059:5005"
     depends_on:
       - mongo-catalogue
+    networks:
+      - app-network
 
   payments:
     container_name: payments
@@ -114,7 +131,8 @@ services:
       JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
     ports:
       - "8090:8080"
-
+    networks:
+      - app-network
 
   orders:
     container_name: orders
@@ -128,7 +146,8 @@ services:
       - "8091:8080"
     depends_on:
       - mongo-orders
-
+    networks:
+      - app-network
 
   users:
     container_name: users
@@ -142,7 +161,8 @@ services:
       - "8093:8080"
     depends_on:
       - mongo-users
-
+    networks:
+      - app-network
 
   tester:
     container_name: tester
@@ -155,7 +175,8 @@ services:
       - "8099:8080"
     depends_on:
       - carts
-
+    networks:
+      - app-network
 
   artemis:
     image: quay.io/artemiscloud/activemq-artemis-broker:1.0.25
@@ -171,7 +192,8 @@ services:
 #      rabbitmq-plugins enable rabbitmq_management
 #      http://localhost:15672/#/
 #      http://localhost:8161/console/
-
+    networks:
+      - app-network
 
   shipping:
     container_name: shipping
@@ -186,7 +208,8 @@ services:
       QUARKUS_QPID_JMS_PASSWORD: quarkus  # Password for Artemis
     ports:
       - "8095:8080"
-
+    networks:
+      - app-network
 
   shipping-consumer:
     container_name: shipping-consumer
@@ -199,10 +222,25 @@ services:
       QUARKUS_QPID_JMS_URL: amqp://artemis:5672  # Pointing to Artemis
       QUARKUS_QPID_JMS_USERNAME: quarkus  # Username for Artemis
       QUARKUS_QPID_JMS_PASSWORD: quarkus  # Password for Artemis
+    networks:
+      - app-network
 
+  angular:
+    container_name: angular
+    build:
+      context: consumer
+      dockerfile: ./Dockerfile.jvm
+    ports:
+      - "4200:80" # Exposing on port 4200 or another of your choice
+    networks:
+      - app-network
 
 volumes:
   carts_mongodb_data:
   catalogue_mongodb_data:
   orders_mongodb_data:
   users_mongodb_data:
+
+networks:
+  app-network:
+    driver: bridge
