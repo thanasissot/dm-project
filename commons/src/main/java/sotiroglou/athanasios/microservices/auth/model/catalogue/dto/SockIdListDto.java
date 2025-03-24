@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.model.catalogue.dto;
+package sotiroglou.athanasios.microservices.auth.model.catalogue.dto;
 
 import lombok.*;
 

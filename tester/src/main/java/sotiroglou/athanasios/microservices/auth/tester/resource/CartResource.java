@@ -1,16 +1,16 @@
-package sotiroglou.athanasios.microservices.tester.resource;
+package sotiroglou.athanasios.microservices.auth.tester.resource;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import sotiroglou.athanasios.microservices.model.carts.Cart;
-import sotiroglou.athanasios.microservices.model.carts.dto.CartItemDto;
-import sotiroglou.athanasios.microservices.model.carts.dto.CartQueryDto;
-import sotiroglou.athanasios.microservices.model.carts.dto.CartResponseDto;
-import sotiroglou.athanasios.microservices.model.carts.dto.CreateCartDto;
-import sotiroglou.athanasios.microservices.tester.service.CartService;
+import sotiroglou.athanasios.microservices.auth.model.carts.Cart;
+import sotiroglou.athanasios.microservices.auth.model.carts.dto.CartItemDto;
+import sotiroglou.athanasios.microservices.auth.model.carts.dto.CartQueryDto;
+import sotiroglou.athanasios.microservices.auth.model.carts.dto.CartResponseDto;
+import sotiroglou.athanasios.microservices.auth.model.carts.dto.CreateCartDto;
+import sotiroglou.athanasios.microservices.auth.tester.service.CartService;
 
 @Path("/tester/carts")
 public class CartResource {

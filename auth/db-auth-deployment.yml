@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-db-init-script
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS auth_role (
+                                             auth_role_id SERIAL PRIMARY KEY,
+                                             role_name VARCHAR(255) NOT NULL
+        );
+
+    CREATE TABLE IF NOT EXISTS auth_user (
+                                             auth_user_id SERIAL PRIMARY KEY,
+                                             username VARCHAR(255) NOT NULL,
+        password VARCHAR(255) NOT NULL
+        );
+
+    CREATE TABLE IF NOT EXISTS user_roles (
+                                              user_id BIGINT NOT NULL,
+                                              role_id BIGINT NOT NULL,
+                                              PRIMARY KEY (user_id, role_id),
+        FOREIGN KEY (user_id) REFERENCES auth_user (auth_user_id),
+        FOREIGN KEY (role_id) REFERENCES auth_role (auth_role_id)
+        );
+
+    INSERT INTO auth_role (role_name) VALUES ('USER'), ('ADMIN'), ('SUPERADMIN')
+        ON CONFLICT DO NOTHING;
+
+    INSERT INTO auth_user (username, password) VALUES ('testuser', 'password')
+        ON CONFLICT DO NOTHING;
+
+    DO $$
+    DECLARE
+    user_id BIGINT;
+        role_id BIGINT;
+    BEGIN
+    SELECT auth_user_id INTO user_id FROM auth_user WHERE username = 'testuser';
+    SELECT auth_role_id INTO role_id FROM auth_role WHERE role_name = 'USER';
+    
+    IF user_id IS NOT NULL AND role_id IS NOT NULL THEN
+            INSERT INTO user_roles (user_id, role_id) VALUES (user_id, role_id)
+            ON CONFLICT DO NOTHING;
+    END IF;
+    END $$;
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-db-credentials
+type: Opaque
+data:
+  username: YXV0aHVzZXI=  # authuser encoded in base64
+  password: YXV0aHBhc3N3b3Jk  # authpassword encoded in base64
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: auth-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-db
+  template:
+    metadata:
+      labels:
+        app: auth-db
+    spec:
+      containers:
+        - name: auth-db
+          image: postgres:15
+          env:
+            - name: POSTGRES_USER
+              value: admin
+            - name: POSTGRES_PASSWORD
+              value: admin
+            - name: POSTGRES_DB
+              value: backend_db
+          ports:
+            - containerPort: 5432
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-db
+spec:
+  selector:
+    app: auth-db
+  ports:
+    - port: 5432

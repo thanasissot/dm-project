@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.model.payment;
+package sotiroglou.athanasios.microservices.auth.model.payment;
 
 import lombok.*;
 

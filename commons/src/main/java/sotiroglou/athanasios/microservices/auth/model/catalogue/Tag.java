@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.model.catalogue;
+package sotiroglou.athanasios.microservices.auth.model.catalogue;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import lombok.*;

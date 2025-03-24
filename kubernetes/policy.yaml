@@ -1,0 +1,30 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-apps-and-dbs
+spec:
+  endpointSelector:
+    matchLabels:
+      app: auth-app
+      app: carts-app
+      app: auth-db
+      app: carts-db
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: auth-app
+        - matchLabels:
+            app: carts-app
+        - matchLabels:
+            app: auth-db
+        - matchLabels:
+            app: carts-db
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+            - port: "5432"
+              protocol: TCP
+          rules:
+            http:
+              - {}

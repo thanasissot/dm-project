@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.catalogue;
+package sotiroglou.athanasios.microservices.auth.catalogue;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;

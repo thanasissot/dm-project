@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.orders.utils;
+package sotiroglou.athanasios.microservices.auth.orders.utils;
 
 import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory;
 

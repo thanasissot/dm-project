@@ -1,8 +1,8 @@
-package sotiroglou.athanasios.microservices.payments.service;
+package sotiroglou.athanasios.microservices.auth.payments.service;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import jakarta.enterprise.context.ApplicationScoped;
-import sotiroglou.athanasios.microservices.payments.payment.AuthoriseResponse;
+import sotiroglou.athanasios.microservices.auth.payments.payment.AuthoriseResponse;
 
 @ApplicationScoped
 public class PaymentServiceImpl implements PaymentService {

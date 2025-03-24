@@ -3,7 +3,7 @@ Receive new order ->
 sent request to get Address for shipping
 sent request to get Customer 
 sent request to get Card (customer credit card data?)
-sent request to get Items data (quantity + price for each in Cart)
+sent request to get Items data (quantity + price for each in sotiroglou.athanasios.microservices.cartsq.Cart)
 
 calculate total cost
 request to Payments to make sure they've paid

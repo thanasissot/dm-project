@@ -1,6 +1,6 @@
-package sotiroglou.athanasios.microservices.payments.service;
+package sotiroglou.athanasios.microservices.auth.payments.service;
 
-import sotiroglou.athanasios.microservices.payments.payment.AuthoriseResponse;
+import sotiroglou.athanasios.microservices.auth.payments.payment.AuthoriseResponse;
 
 public interface PaymentService {
     AuthoriseResponse authorise(float amount);

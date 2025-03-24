@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.users.users;
+package sotiroglou.athanasios.microservices.auth.users.users;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;

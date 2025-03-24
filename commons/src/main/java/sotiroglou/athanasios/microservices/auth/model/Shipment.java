@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.model;
+package sotiroglou.athanasios.microservices.auth.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

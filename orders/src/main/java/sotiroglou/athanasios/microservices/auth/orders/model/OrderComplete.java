@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.orders.model;
+package sotiroglou.athanasios.microservices.auth.orders.model;
 
 import lombok.Data;
 

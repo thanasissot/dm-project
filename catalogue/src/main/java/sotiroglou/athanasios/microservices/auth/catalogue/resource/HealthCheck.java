@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.catalogue.resource;
+package sotiroglou.athanasios.microservices.auth.catalogue.resource;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.MediaType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import sotiroglou.athanasios.microservices.catalogue.catalogue.Sock;
+import sotiroglou.athanasios.microservices.auth.catalogue.catalogue.Sock;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

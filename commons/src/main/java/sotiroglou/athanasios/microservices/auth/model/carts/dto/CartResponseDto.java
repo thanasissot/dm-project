@@ -1,7 +1,7 @@
-package sotiroglou.athanasios.microservices.model.carts.dto;
+package sotiroglou.athanasios.microservices.auth.model.carts.dto;
 
 import lombok.*;
-import sotiroglou.athanasios.microservices.model.carts.CartItem;
+import sotiroglou.athanasios.microservices.auth.model.carts.CartItem;
 
 import java.util.Set;
 

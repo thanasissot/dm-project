@@ -1,12 +1,12 @@
-package sotiroglou.athanasios.microservices.orders.service;
+package sotiroglou.athanasios.microservices.auth.orders.service;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import sotiroglou.athanasios.microservices.orders.utils.RequestUUIDHeaderFactory;
-import sotiroglou.athanasios.microservices.model.carts.Cart;
+import sotiroglou.athanasios.microservices.auth.orders.utils.RequestUUIDHeaderFactory;
+import sotiroglou.athanasios.microservices.auth.model.carts.Cart;
 
 import java.util.concurrent.CompletionStage;
 

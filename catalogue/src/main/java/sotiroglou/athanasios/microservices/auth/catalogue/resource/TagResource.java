@@ -1,8 +1,8 @@
-package sotiroglou.athanasios.microservices.catalogue.resource;
+package sotiroglou.athanasios.microservices.auth.catalogue.resource;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import sotiroglou.athanasios.microservices.catalogue.catalogue.Tag;
+import sotiroglou.athanasios.microservices.auth.catalogue.catalogue.Tag;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="Quarkus" url="file://$PROJECT_DIR$/auth" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/carts" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/carts-q" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/catalogue" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/commons" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/orders" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/payments" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/shipping" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/shipping-consumer" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/tester" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/users" />
+  </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/users/pom.xml" />
+        <option value="$PROJECT_DIR$/carts/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

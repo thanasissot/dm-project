@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-app
+  template:
+    metadata:
+      labels:
+        app: auth-app
+    spec:
+      containers:
+        - name: auth-app
+          image: auth-app
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: QUARKUS_DATASOURCE_JDBC_URL
+              value: jdbc:postgresql://auth-db-service:5432/auth-db
+            - name: QUARKUS_DATASOURCE_USERNAME
+              value: postgres
+            - name: QUARKUS_DATASOURCE_PASSWORD
+              value: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-app-service
+spec:
+  selector:
+    app: auth-app
+  ports:
+    - protocol: TCP
+      port: 8080
+      nodePort: 30080  # Exposes the service on this port
+      targetPort: 8080
+  type: NodePort

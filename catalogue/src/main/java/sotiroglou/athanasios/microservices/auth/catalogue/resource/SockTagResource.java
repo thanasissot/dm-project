@@ -1,10 +1,10 @@
-package sotiroglou.athanasios.microservices.catalogue.resource;
+package sotiroglou.athanasios.microservices.auth.catalogue.resource;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.bson.types.ObjectId;
-import sotiroglou.athanasios.microservices.catalogue.catalogue.SockTag;
+import sotiroglou.athanasios.microservices.auth.catalogue.catalogue.SockTag;
 
 @Path("/catalogue/socks/{sockId}/tags")
 @Produces(MediaType.APPLICATION_JSON)

@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.orders.exception;
+package sotiroglou.athanasios.microservices.auth.orders.exception;
 
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;

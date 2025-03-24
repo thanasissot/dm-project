@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.tester.utils;
+package sotiroglou.athanasios.microservices.auth.tester.utils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.MultivaluedHashMap;

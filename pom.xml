@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>commons</module>
-        <module>carts</module>
+        <module>carts-q</module>
         <module>catalogue</module>
         <module>payments</module>
         <module>users</module>
@@ -18,6 +18,8 @@
         <module>tester</module>
         <module>shipping</module>
         <module>shipping-consumer</module>
+        <module>auth</module>
+        <module>carts</module>
         <!--        <module>jms</module>-->
 <!--        <module>auth</module>-->
 <!--        <module>front-end</module>-->

@@ -1,0 +1,20 @@
+dir -> auth
+ mvn clean package -pl "auth" -DskipTests
+ docker build -f ./src/main/docker/Dockerfile.jvm -t auth-app .
+
+ mvn clean package -pl "carts" -DskipTests
+ docker build -f ./src/main/docker/Dockerfile.jvm -t carts-app .
+
+
+
+kubectl delete svc carts-app-service -n default
+kubectl delete deployment carts-deployment -n default
+
+curl --location 'http://192.168.49.2:30080/security/auth/login' \
+--header 'Content-Type: application/json' \
+--data '{
+  "username": "user",
+  "password": "user"
+}'
+
+eval $(minikube docker-env)

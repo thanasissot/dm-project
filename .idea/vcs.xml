@@ -2,8 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/front-end-temp/front-end/E-commerce-WKM" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/front-end-temp/front-end/angular_18_eCommerce_app" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/front-end-temp/front-end/e-commerce" vcs="Git" />
   </component>
 </project>

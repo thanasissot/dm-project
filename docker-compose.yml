@@ -1,5 +1,4 @@
-
-
+version: '3.7'
 
 services:
 #  cart-db:
@@ -16,230 +15,298 @@ services:
 #    volumes:
 #      - mongodb_data:/data/
 #      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js  # Mount the script
-
-
-  mongo-carts:
-    image: mongo:latest
-    container_name: mongo-carts
-    restart: always
-    command: --bind_ip_all
+  # Auth services
+  auth-db:
+    container_name: db-auth-dm
+    image: postgres:15
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: secret
-      MONGO_INITDB_DATABASE: carts_db
+      POSTGRES_DB: authdb
+      POSTGRES_USER: authuser
+      POSTGRES_PASSWORD: authpassword
     ports:
-      - "27018:27017"  # Port specific to this Mongo instance
+      - "5434:5432"  # Changed port to avoid conflict with carts-db
     volumes:
-      - carts_mongodb_data:/data/db
-      - ./mongo/carts-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - auth_db_data:/var/lib/postgresql/data
+      - ./auth/src/main/resources/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+
+  auth-app:
+    container_name: auth-app
+    build:
+      context: ./auth
+      dockerfile: src/main/docker/Dockerfile.jvm
+    ports:
+      - "8087:8080"  # Changed port to avoid conflicts
+    environment:
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://auth-db:5432/authdb
+      QUARKUS_DATASOURCE_USERNAME: authuser
+      QUARKUS_DATASOURCE_PASSWORD: authpassword
+    depends_on:
+      - auth-db
+    networks:
+      - app-network
+
+  # Carts services with Postgres instead of MongoDB
+  carts-db:
+    image: postgres:15
+    container_name: db-carts-dm
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cartsdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - carts_db_data:/var/lib/postgresql/data
+      - ./carts/src/main/resources/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
 
 
-  mongo-catalogue:
-    image: mongo:latest
-    container_name: mongo-catalogue
-    restart: always
-    command: --bind_ip_all
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: secret
-      MONGO_INITDB_DATABASE: catalogue_db
-    ports:
-      - "27019:27017"
-    volumes:
-      - catalogue_mongodb_data:/data/db
-      - ./mongo/catalogue-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
-    networks:
-      - app-network
-
-
-  mongo-orders:
-    image: mongo:latest
-    container_name: mongo-orders
-    restart: always
-    command: --bind_ip_all
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: secret
-      MONGO_INITDB_DATABASE: orders_db
-    ports:
-      - "27020:27017"
-    volumes:
-      - orders_mongodb_data:/data/db
-      - ./mongo/orders-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
-    networks:
-      - app-network
-
-
-  mongo-users:
-    image: mongo:latest
-    container_name: mongo-users
-    restart: always
-    command: --bind_ip_all
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: secret
-      MONGO_INITDB_DATABASE: users_db
-    ports:
-      - "27021:27017"
-    volumes:
-      - users_mongodb_data:/data/db
-      - ./mongo/users-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
-    networks:
-      - app-network
-
-
+  # Replace the existing carts service
   carts:
     container_name: carts
     build:
-      context: carts  # This should be the path to your root project folder where 'src' is located
-      dockerfile: ./src/main/docker/Dockerfile.jvm  # Path to Dockerfile relative to the context
+      context: ./carts
+      dockerfile: src/main/docker/Dockerfile.jvm
     environment:
-      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo-carts:27017/carts_db?authSource=admin
-      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo-carts:27017/carts_db?authSource=admin"
+      SPRING_DATASOURCE_JDBC_URL: jdbc:postgresql://carts-db:5432/cartsdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_PROFILES_ACTIVE: docker
+      JAVA_OPTS_APPEND: "-Djava.util.logging.manager=org.jboss.logmanager.LogManager"
     ports:
       - "8088:8080"
     depends_on:
-      - mongo-carts
+      - carts-db
     networks:
       - app-network
-
-  catalogue:
-    container_name: catalogue
-    build:
-      context: catalogue
-      dockerfile: ./src/main/docker/Dockerfile.jvm
-    environment:
-      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo-catalogue:27017/catalogue_db?authSource=admin
-#      JAVA_OPTS_APPEND: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Dquarkus.profile=docker -Dimage.dir=/opt/images -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin"
-      JAVA_OPTS_APPEND: "-Dquarkus.profile=docker -Dimage.dir=/opt/images -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo-catalogue:27017/catalogue_db?authSource=admin"
-    ports:
-      - "8089:8080"
-      - "5059:5005"
-    depends_on:
-      - mongo-catalogue
-    networks:
-      - app-network
-
-  payments:
-    container_name: payments
-    build:
-      context: payments
-      dockerfile: ./src/main/docker/Dockerfile.jvm
-    environment:
-      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
-    ports:
-      - "8090:8080"
-    networks:
-      - app-network
-
-  orders:
-    container_name: orders
-    build:
-      context: orders
-      dockerfile: ./src/main/docker/Dockerfile.jvm
-    environment:
-      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo-orders:27017/orders_db?authSource=admin
-      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager  -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo-orders:27017/orders_db?authSource=admin"
-    ports:
-      - "8091:8080"
-    depends_on:
-      - mongo-orders
-    networks:
-      - app-network
-
-  users:
-    container_name: users
-    build:
-      context: users
-      dockerfile: ./src/main/docker/Dockerfile.jvm
-    environment:
-      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo-users:27017/users_db?authSource=admin
-      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager  -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo-users:27017/users_db?authSource=admin"
-    ports:
-      - "8093:8080"
-    depends_on:
-      - mongo-users
-    networks:
-      - app-network
-
-  tester:
-    container_name: tester
-    build:
-      context: tester
-      dockerfile: ./src/main/docker/Dockerfile.jvm
-    environment:
-      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
-    ports:
-      - "8099:8080"
-    depends_on:
-      - carts
-    networks:
-      - app-network
-
-  artemis:
-    image: quay.io/artemiscloud/activemq-artemis-broker:1.0.25
-    ports:
-      - "8161:8161"   # Management Console
-      - "61616:61616" # OpenWire
-      - "5672:5672"   # AMQP
-    environment:
-      AMQ_USER: quarkus
-      AMQ_PASSWORD: quarkus
-      AMQ_EXTRA_ARGS: "--relax-jolokia"
-    restart: always
-#      rabbitmq-plugins enable rabbitmq_management
-#      http://localhost:15672/#/
-#      http://localhost:8161/console/
-    networks:
-      - app-network
-
-  shipping:
-    container_name: shipping
-    build:
-      context: shipping
-      dockerfile: ./src/main/docker/Dockerfile.jvm
-    depends_on:
-      - artemis
-    environment:
-      QUARKUS_QPID_JMS_URL: amqp://artemis:5672  # Pointing to Artemis
-      QUARKUS_QPID_JMS_USERNAME: quarkus  # Username for Artemis
-      QUARKUS_QPID_JMS_PASSWORD: quarkus  # Password for Artemis
-    ports:
-      - "8095:8080"
-    networks:
-      - app-network
-
-  shipping-consumer:
-    container_name: shipping-consumer
-    build:
-      context: shipping-consumer
-      dockerfile: ./src/main/docker/Dockerfile.jvm
-    depends_on:
-      - artemis
-    environment:
-      QUARKUS_QPID_JMS_URL: amqp://artemis:5672  # Pointing to Artemis
-      QUARKUS_QPID_JMS_USERNAME: quarkus  # Username for Artemis
-      QUARKUS_QPID_JMS_PASSWORD: quarkus  # Password for Artemis
-    networks:
-      - app-network
-
-  angular:
-    container_name: angular
-    build:
-      context: consumer
-      dockerfile: ./Dockerfile.jvm
-    ports:
-      - "4200:80" # Exposing on port 4200 or another of your choice
-    networks:
-      - app-network
+#
+#  mongo-carts:
+#    image: mongo:latest
+#    container_name: mongo-carts
+#    restart: always
+#    command: --bind_ip_all
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: admin
+#      MONGO_INITDB_ROOT_PASSWORD: secret
+#      MONGO_INITDB_DATABASE: carts_db
+#    ports:
+#      - "27018:27017"  # Port specific to this Mongo instance
+#    volumes:
+#      - carts_mongodb_data:/data/db
+#      - ./mongo/carts-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+#    networks:
+#      - app-network
+#
+#
+#  mongo-catalogue:
+#    image: mongo:latest
+#    container_name: mongo-catalogue
+#    restart: always
+#    command: --bind_ip_all
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: admin
+#      MONGO_INITDB_ROOT_PASSWORD: secret
+#      MONGO_INITDB_DATABASE: catalogue_db
+#    ports:
+#      - "27019:27017"
+#    volumes:
+#      - catalogue_mongodb_data:/data/db
+#      - ./mongo/catalogue-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+#    networks:
+#      - app-network
+#
+#
+#  mongo-orders:
+#    image: mongo:latest
+#    container_name: mongo-orders
+#    restart: always
+#    command: --bind_ip_all
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: admin
+#      MONGO_INITDB_ROOT_PASSWORD: secret
+#      MONGO_INITDB_DATABASE: orders_db
+#    ports:
+#      - "27020:27017"
+#    volumes:
+#      - orders_mongodb_data:/data/db
+#      - ./mongo/orders-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+#    networks:
+#      - app-network
+#
+#
+#  mongo-users:
+#    image: mongo:latest
+#    container_name: mongo-users
+#    restart: always
+#    command: --bind_ip_all
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: admin
+#      MONGO_INITDB_ROOT_PASSWORD: secret
+#      MONGO_INITDB_DATABASE: users_db
+#    ports:
+#      - "27021:27017"
+#    volumes:
+#      - users_mongodb_data:/data/db
+#      - ./mongo/users-mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+#    networks:
+#      - app-network
+#
+#
+#  carts:
+#    container_name: carts
+#    build:
+#      context: carts  # This should be the path to your root project folder where 'src' is located
+#      dockerfile: ./src/main/docker/Dockerfile.jvm  # Path to Dockerfile relative to the context
+#    environment:
+#      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo-carts:27017/carts_db?authSource=admin
+#      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo-carts:27017/carts_db?authSource=admin"
+#    ports:
+#      - "8088:8080"
+#    depends_on:
+#      - mongo-carts
+#    networks:
+#      - app-network
+#
+#  catalogue:
+#    container_name: catalogue
+#    build:
+#      context: catalogue
+#      dockerfile: ./src/main/docker/Dockerfile.jvm
+#    environment:
+#      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo-catalogue:27017/catalogue_db?authSource=admin
+##      JAVA_OPTS_APPEND: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Dquarkus.profile=docker -Dimage.dir=/opt/images -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo:27017/mydatabase?authSource=admin"
+#      JAVA_OPTS_APPEND: "-Dquarkus.profile=docker -Dimage.dir=/opt/images -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo-catalogue:27017/catalogue_db?authSource=admin"
+#    ports:
+#      - "8089:8080"
+#      - "5059:5005"
+#    depends_on:
+#      - mongo-catalogue
+#    networks:
+#      - app-network
+#
+#  payments:
+#    container_name: payments
+#    build:
+#      context: payments
+#      dockerfile: ./src/main/docker/Dockerfile.jvm
+#    environment:
+#      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+#    ports:
+#      - "8090:8080"
+#    networks:
+#      - app-network
+#
+#  orders:
+#    container_name: orders
+#    build:
+#      context: orders
+#      dockerfile: ./src/main/docker/Dockerfile.jvm
+#    environment:
+#      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo-orders:27017/orders_db?authSource=admin
+#      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager  -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo-orders:27017/orders_db?authSource=admin"
+#    ports:
+#      - "8091:8080"
+#    depends_on:
+#      - mongo-orders
+#    networks:
+#      - app-network
+#
+#  users:
+#    container_name: users
+#    build:
+#      context: users
+#      dockerfile: ./src/main/docker/Dockerfile.jvm
+#    environment:
+#      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://admin:secret@mongo-users:27017/users_db?authSource=admin
+#      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager  -Dquarkus.mongodb.connection-string=mongodb://admin:secret@mongo-users:27017/users_db?authSource=admin"
+#    ports:
+#      - "8093:8080"
+#    depends_on:
+#      - mongo-users
+#    networks:
+#      - app-network
+#
+#  tester:
+#    container_name: tester
+#    build:
+#      context: tester
+#      dockerfile: ./src/main/docker/Dockerfile.jvm
+#    environment:
+#      JAVA_OPTS_APPEND: "-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+#    ports:
+#      - "8099:8080"
+#    depends_on:
+#      - carts
+#    networks:
+#      - app-network
+#
+#  artemis:
+#    image: quay.io/artemiscloud/activemq-artemis-broker:1.0.25
+#    ports:
+#      - "8161:8161"   # Management Console
+#      - "61616:61616" # OpenWire
+#      - "5672:5672"   # AMQP
+#    environment:
+#      AMQ_USER: quarkus
+#      AMQ_PASSWORD: quarkus
+#      AMQ_EXTRA_ARGS: "--relax-jolokia"
+#    restart: always
+##      rabbitmq-plugins enable rabbitmq_management
+##      http://localhost:15672/#/
+##      http://localhost:8161/console/
+#    networks:
+#      - app-network
+#
+#  shipping:
+#    container_name: shipping
+#    build:
+#      context: shipping
+#      dockerfile: ./src/main/docker/Dockerfile.jvm
+#    depends_on:
+#      - artemis
+#    environment:
+#      QUARKUS_QPID_JMS_URL: amqp://artemis:5672  # Pointing to Artemis
+#      QUARKUS_QPID_JMS_USERNAME: quarkus  # Username for Artemis
+#      QUARKUS_QPID_JMS_PASSWORD: quarkus  # Password for Artemis
+#    ports:
+#      - "8095:8080"
+#    networks:
+#      - app-network
+#
+#  shipping-consumer:
+#    container_name: shipping-consumer
+#    build:
+#      context: shipping-consumer
+#      dockerfile: ./src/main/docker/Dockerfile.jvm
+#    depends_on:
+#      - artemis
+#    environment:
+#      QUARKUS_QPID_JMS_URL: amqp://artemis:5672  # Pointing to Artemis
+#      QUARKUS_QPID_JMS_USERNAME: quarkus  # Username for Artemis
+#      QUARKUS_QPID_JMS_PASSWORD: quarkus  # Password for Artemis
+#    networks:
+#      - app-network
+#
+#  angular:
+#    container_name: angular
+#    build:
+#      context: consumer
+#      dockerfile: ./Dockerfile.jvm
+#    ports:
+#      - "4200:80" # Exposing on port 4200 or another of your choice
+#    networks:
+#      - app-network
 
 volumes:
   carts_mongodb_data:
   catalogue_mongodb_data:
   orders_mongodb_data:
   users_mongodb_data:
+  auth_db_data:
+  carts_db_data:
 
 networks:
   app-network:

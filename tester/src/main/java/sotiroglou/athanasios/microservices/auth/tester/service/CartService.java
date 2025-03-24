@@ -1,16 +1,16 @@
-package sotiroglou.athanasios.microservices.tester.service;
+package sotiroglou.athanasios.microservices.auth.tester.service;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import sotiroglou.athanasios.microservices.model.carts.Cart;
-import sotiroglou.athanasios.microservices.model.carts.dto.CartItemDto;
-import sotiroglou.athanasios.microservices.model.carts.dto.CartQueryDto;
-import sotiroglou.athanasios.microservices.model.carts.dto.CartResponseDto;
-import sotiroglou.athanasios.microservices.model.carts.dto.CreateCartDto;
-import sotiroglou.athanasios.microservices.tester.utils.RequestUUIDHeaderFactory;
+import sotiroglou.athanasios.microservices.auth.model.carts.Cart;
+import sotiroglou.athanasios.microservices.auth.model.carts.dto.CartItemDto;
+import sotiroglou.athanasios.microservices.auth.model.carts.dto.CartQueryDto;
+import sotiroglou.athanasios.microservices.auth.model.carts.dto.CartResponseDto;
+import sotiroglou.athanasios.microservices.auth.model.carts.dto.CreateCartDto;
+import sotiroglou.athanasios.microservices.auth.tester.utils.RequestUUIDHeaderFactory;
 
 import java.util.List;
 import java.util.concurrent.CompletionStage;

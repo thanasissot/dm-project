@@ -1,13 +1,13 @@
-package sotiroglou.athanasios.microservices.users.resource;
+package sotiroglou.athanasios.microservices.auth.users.resource;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
-import sotiroglou.athanasios.microservices.users.users.Address;
-import sotiroglou.athanasios.microservices.users.users.Card;
-import sotiroglou.athanasios.microservices.users.users.User;
+import sotiroglou.athanasios.microservices.auth.users.users.Address;
+import sotiroglou.athanasios.microservices.auth.users.users.Card;
+import sotiroglou.athanasios.microservices.auth.users.users.User;
 
 import java.util.List;
 

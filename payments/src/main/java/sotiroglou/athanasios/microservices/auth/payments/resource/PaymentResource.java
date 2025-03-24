@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.payments.resource;
+package sotiroglou.athanasios.microservices.auth.payments.resource;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -7,9 +7,9 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import sotiroglou.athanasios.microservices.payments.payment.AuthoriseRequest;
-import sotiroglou.athanasios.microservices.payments.payment.AuthoriseResponse;
-import sotiroglou.athanasios.microservices.payments.service.PaymentService;
+import sotiroglou.athanasios.microservices.auth.payments.payment.AuthoriseRequest;
+import sotiroglou.athanasios.microservices.auth.payments.payment.AuthoriseResponse;
+import sotiroglou.athanasios.microservices.auth.payments.service.PaymentService;
 
 @Path("/auth")
 @Consumes(MediaType.APPLICATION_JSON)

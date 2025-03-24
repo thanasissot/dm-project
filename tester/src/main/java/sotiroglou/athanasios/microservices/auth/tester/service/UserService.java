@@ -1,14 +1,14 @@
-package sotiroglou.athanasios.microservices.tester.service;
+package sotiroglou.athanasios.microservices.auth.tester.service;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import sotiroglou.athanasios.microservices.model.users.Address;
-import sotiroglou.athanasios.microservices.model.users.Card;
-import sotiroglou.athanasios.microservices.model.users.User;
-import sotiroglou.athanasios.microservices.tester.utils.RequestUUIDHeaderFactory;
+import sotiroglou.athanasios.microservices.auth.model.users.Address;
+import sotiroglou.athanasios.microservices.auth.model.users.Card;
+import sotiroglou.athanasios.microservices.auth.model.users.User;
+import sotiroglou.athanasios.microservices.auth.tester.utils.RequestUUIDHeaderFactory;
 
 import java.util.List;
 import java.util.concurrent.CompletionStage;

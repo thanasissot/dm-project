@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: carts-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: carts-app
+  template:
+    metadata:
+      labels:
+        app: carts-app
+    spec:
+      containers:
+        - name: carts-app
+          image: carts-app
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: kubernetes
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: carts-app-service
+spec:
+  selector:
+    app: carts-app
+  ports:
+    - protocol: TCP
+      port: 8080
+      nodePort: 30081  # Exposes the service on this port
+      targetPort: 8080
+  type: NodePort

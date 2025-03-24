@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.payments.payment;
+package sotiroglou.athanasios.microservices.auth.payments.payment;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

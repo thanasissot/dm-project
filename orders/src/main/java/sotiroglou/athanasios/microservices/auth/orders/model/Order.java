@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.orders.model;
+package sotiroglou.athanasios.microservices.auth.orders.model;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;

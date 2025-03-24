@@ -1,4 +1,4 @@
-package sotiroglou.athanasios.microservices.catalogue.resource;
+package sotiroglou.athanasios.microservices.auth.catalogue.resource;
 
 import io.quarkus.mongodb.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
@@ -10,12 +10,12 @@ import jakarta.ws.rs.core.Response;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
-import sotiroglou.athanasios.microservices.catalogue.ImageDirectoryProducer;
-import sotiroglou.athanasios.microservices.catalogue.catalogue.Sock;
-import sotiroglou.athanasios.microservices.catalogue.catalogue.SockTag;
-import sotiroglou.athanasios.microservices.catalogue.catalogue.Tag;
-import sotiroglou.athanasios.microservices.catalogue.catalogue.dto.SockIdListDto;
-import sotiroglou.athanasios.microservices.catalogue.catalogue.dto.SockPriceDto;
+import sotiroglou.athanasios.microservices.auth.catalogue.ImageDirectoryProducer;
+import sotiroglou.athanasios.microservices.auth.catalogue.catalogue.Sock;
+import sotiroglou.athanasios.microservices.auth.catalogue.catalogue.SockTag;
+import sotiroglou.athanasios.microservices.auth.catalogue.catalogue.Tag;
+import sotiroglou.athanasios.microservices.auth.catalogue.catalogue.dto.SockIdListDto;
+import sotiroglou.athanasios.microservices.auth.catalogue.catalogue.dto.SockPriceDto;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,6 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 @Path("/catalogue")
 @Produces(MediaType.APPLICATION_JSON)
